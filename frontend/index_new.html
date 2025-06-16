@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Entrepreneur Tunisie - Plateforme des Auto-Entrepreneurs</title>
+    <meta name="description" content="La première plateforme tunisienne dédiée aux auto-entrepreneurs. Trouvez des services de qualité ou proposez vos compétences.">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <h2 class="logo-text">🇹🇳 Auto-Entrepreneur</h2>
+                </div>
+                <div class="nav-links">
+                    <a href="#services" class="nav-link">Services</a>
+                    <a href="#autoentrepreneurs" class="nav-link">Auto-entrepreneurs</a>
+                    <a href="#about" class="nav-link">À propos</a>
+                    <div class="auth-buttons">
+                        <a href="login.html" class="btn btn-secondary">Connexion</a>
+                        <a href="register.html" class="btn btn-primary">Inscription</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Connectez-vous avec les meilleurs 
+                        <span class="text-gradient">auto-entrepreneurs tunisiens</span>
+                    </h1>
+                    <p class="hero-description">
+                        Découvrez des services de qualité ou proposez vos compétences sur la première plateforme 
+                        dédiée aux auto-entrepreneurs en Tunisie.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="services.html" class="btn btn-primary btn-lg">
+                            🔍 Trouver un service
+                        </a>
+                        <a href="register.html?type=autoentrepreneur" class="btn btn-outline btn-lg">
+                            💼 Devenir auto-entrepreneur
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="totalServices">0</span>
+                            <span class="stat-label">Services disponibles</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="totalAutoentrepreneurs">0</span>
+                            <span class="stat-label">Auto-entrepreneurs</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">4.9</span>
+                            <span class="stat-label">Note moyenne</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-card">
+                        <div class="card-header">
+                            <div class="avatar"></div>
+                            <div class="card-info">
+                                <h4>Ahmed Ben Ali</h4>
+                                <p>Développeur Web</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h5>Création de site web professionnel</h5>
+                            <div class="card-rating">
+                                ⭐⭐⭐⭐⭐ <span>5.0 (24 avis)</span>
+                            </div>
+                            <div class="card-price">À partir de 500 DT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories" id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Explorez nos catégories</h2>
+                <p>Trouvez le service parfait pour votre projet</p>
+            </div>
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Categories will be loaded here -->
+                <div class="category-loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des catégories...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Services -->
+    <section class="featured-services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Services en vedette</h2>
+                <p>Découvrez les services les plus populaires</p>
+            </div>
+            <div class="services-grid" id="featuredServices">
+                <!-- Featured services will be loaded here -->
+                <div class="services-loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des services...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Auto-entrepreneurs -->
+    <section class="top-autoentrepreneurs" id="autoentrepreneurs">
+        <div class="container">
+            <div class="section-header">
+                <h2>Auto-entrepreneurs recommandés</h2>
+                <p>Découvrez les professionnels les mieux notés</p>
+            </div>
+            <div class="autoentrepreneurs-grid" id="topAutoentrepreneurs">
+                <!-- Top auto-entrepreneurs will be loaded here -->
+                <div class="autoentrepreneurs-loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des auto-entrepreneurs...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="how-it-works" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>Comment ça marche ?</h2>
+                <p>Trois étapes simples pour commencer</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-icon">🔍</div>
+                    <h3>1. Recherchez</h3>
+                    <p>Parcourez les services ou auto-entrepreneurs selon vos besoins</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">💬</div>
+                    <h3>2. Contactez</h3>
+                    <p>Discutez directement avec l'auto-entrepreneur pour définir votre projet</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">✅</div>
+                    <h3>3. Réalisez</h3>
+                    <p>Recevez votre service de qualité et laissez un avis</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Prêt à commencer ?</h2>
+                <p>Rejoignez des milliers d'auto-entrepreneurs et clients satisfaits</p>
+                <div class="cta-buttons">
+                    <a href="register.html?type=client" class="btn btn-primary btn-lg">
+                        Trouver un service
+                    </a>
+                    <a href="register.html?type=autoentrepreneur" class="btn btn-outline btn-lg">
+                        Proposer mes services
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🇹🇳 Auto-Entrepreneur Tunisie</h3>
+                    <p>La plateforme qui connecte les auto-entrepreneurs tunisiens avec leurs clients.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="autoentrepreneurs.html">Auto-entrepreneurs</a></li>
+                        <li><a href="about.html">À propos</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="help.html">Centre d'aide</a></li>
+                        <li><a href="terms.html">Conditions d'utilisation</a></li>
+                        <li><a href="privacy.html">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 contact@autoentrepreneur-tn.com</li>
+                        <li>📱 +216 XX XXX XXX</li>
+                        <li>📍 Tunis, Tunisie</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Auto-Entrepreneur Tunisie. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Load homepage data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHomepageData();
+        });
+
+        async function loadHomepageData() {
+            try {
+                // Load categories
+                const categories = await API.get('/categories');
+                displayCategories(categories.data);
+
+                // Load featured services
+                const featuredServices = await API.get('/services/featured');
+                displayFeaturedServices(featuredServices.data);
+
+                // Load top auto-entrepreneurs
+                const autoentrepreneurs = await API.get('/autoentrepreneurs?limit=6');
+                displayTopAutoentrepreneurs(autoentrepreneurs.data.autoentrepreneurs);
+
+                // Update stats
+                updateStats();
+            } catch (error) {
+                console.error('Error loading homepage data:', error);
+            }
+        }
+
+        function displayCategories(categories) {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = categories.map(category => `
+                <a href="services.html?category=${category.id}" class="category-card">
+                    <div class="category-icon">${category.icon}</div>
+                    <h3>${category.name}</h3>
+                    <p>${category.description}</p>
+                </a>
+            `).join('');
+        }
+
+        function displayFeaturedServices(services) {
+            const grid = document.getElementById('featuredServices');
+            grid.innerHTML = services.map(service => `
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="${service.images[0] || 'assets/images/placeholder.jpg'}" alt="${service.title}">
+                    </div>
+                    <div class="service-content">
+                        <h3>${service.title}</h3>
+                        <p>${service.short_description}</p>
+                        <div class="service-meta">
+                            <div class="service-rating">
+                                ⭐ ${service.rating_average || '5.0'} (${service.rating_count || 0})
+                            </div>
+                            <div class="service-price">${service.price} DT</div>
+                        </div>
+                        <a href="service.html?id=${service.id}" class="btn btn-primary">Voir détails</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayTopAutoentrepreneurs(autoentrepreneurs) {
+            const grid = document.getElementById('topAutoentrepreneurs');
+            grid.innerHTML = autoentrepreneurs.map(ae => `
+                <div class="autoentrepreneur-card">
+                    <div class="ae-avatar">
+                        <img src="${ae.avatar || 'assets/images/avatar-placeholder.jpg'}" alt="${ae.first_name} ${ae.last_name}">
+                    </div>
+                    <div class="ae-info">
+                        <h3>${ae.first_name} ${ae.last_name}</h3>
+                        <p>${ae.business_name || 'Auto-entrepreneur'}</p>
+                        <div class="ae-rating">⭐ ${ae.avg_rating || '5.0'}</div>
+                        <div class="ae-services">${ae.services_count || 0} services</div>
+                        <a href="profile.html?id=${ae.id}" class="btn btn-outline">Voir profil</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateStats() {
+            try {
+                const [services, autoentrepreneurs] = await Promise.all([
+                    API.get('/services'),
+                    API.get('/autoentrepreneurs')
+                ]);
+
+                document.getElementById('totalServices').textContent = services.data.pagination.total;
+                document.getElementById('totalAutoentrepreneurs').textContent = autoentrepreneurs.data.pagination.total;
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.querySelector('.nav-links');
+            nav.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

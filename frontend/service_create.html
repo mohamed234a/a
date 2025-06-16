@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un service - Auto-Entrepreneur Tunisie</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="assets/logo.png" alt="Auto-Entrepreneur Logo" class="logo">
+          <a href="index.html" class="logo-text" style="text-decoration: none;">Auto-Entrepreneur</a>
+        </div>
+        <nav class="nav-section">
+          <a href="services.html" class="btn btn-secondary">Mes Services</a>
+          <a href="dashboard.html" class="btn btn-secondary">Dashboard</a>
+          <button class="btn btn-error" onclick="logout()">Déconnexion</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: var(--white); padding: 3rem 0;">
+    <div class="container text-center">
+      <h1 class="text-4xl font-bold mb-4">Créer un nouveau service</h1>
+      <p class="text-lg opacity-90">Présentez votre expertise et attirez de nouveaux clients</p>
+    </div>
+  </section>
+
+  <!-- Service Creation Form -->
+  <section style="padding: 3rem 0; background: var(--gray-50);">
+    <div class="container">
+      <div style="max-width: 800px; margin: 0 auto;">
+        <div class="card">
+          <form id="createServiceForm">
+
+            <!-- Basic Information -->
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Informations de base</h3>
+
+              <div class="form-group">
+                <label class="form-label">Titre du service *</label>
+                <input type="text" name="title" class="form-input" placeholder="Ex: Développement d'application mobile" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Description détaillée *</label>
+                <textarea name="description" class="form-textarea" placeholder="Décrivez votre service en détail, vos compétences, ce que vous livrez..." required></textarea>
+              </div>
+
+              <div class="grid grid-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">Catégorie *</label>
+                  <select name="category" class="form-select" required>
+                    <option value="">Choisir une catégorie</option>
+                    <option value="Développement">💻 Développement</option>
+                    <option value="Graphisme">🎨 Graphisme & Design</option>
+                    <option value="Marketing">📈 Marketing Digital</option>
+                    <option value="Rédaction">✍️ Rédaction</option>
+                    <option value="Traduction">🌐 Traduction</option>
+                    <option value="Vidéo">🎬 Vidéo & Animation</option>
+                    <option value="Musique">🎵 Musique & Audio</option>
+                    <option value="Business">💼 Business & Conseil</option>
+                    <option value="Formation">📚 Formation & Coaching</option>
+                    <option value="Autre">⚡ Autre</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Prix (DT) *</label>
+                  <input type="number" name="price" class="form-input" placeholder="500" min="1" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Images Section -->
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Images du service</h3>
+              <p class="text-sm text-gray-600 mb-4">Ajoutez des images pour présenter votre travail (optionnel)</p>
+
+              <div class="image-upload-section">
+                <div class="image-upload-area" onclick="document.getElementById('imageUrl').focus()">
+                  <div class="upload-placeholder">
+                    <div class="text-4xl mb-2">📸</div>
+                    <p class="font-semibold">Ajoutez des URLs d'images</p>
+                    <p class="text-sm text-gray-500">Séparez les URLs par des virgules</p>
+                  </div>
+                </div>
+
+                <div class="form-group mt-4">
+                  <label class="form-label">URLs des images (optionnel)</label>
+                  <input type="text" name="images" id="imageUrl" class="form-input"
+                         placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+                         onchange="previewImages(this.value)">
+                </div>
+
+                <div id="imagePreview" class="image-preview-grid mt-4"></div>
+              </div>
+            </div>
+
+            <!-- Availability -->
+            <div class="mb-8">
+              <h3 class="text-xl font-semibold mb-4">Disponibilité</h3>
+
+              <div class="form-group">
+                <label class="form-label">Statut de disponibilité *</label>
+                <select name="availability" class="form-select" required>
+                  <option value="Disponible">✅ Disponible immédiatement</option>
+                  <option value="Occupé">⏳ Occupé (délai d'attente)</option>
+                  <option value="Sur demande">📞 Sur demande</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-primary" id="createBtn">
+                <span id="createBtnText">🚀 Créer le service</span>
+                <div id="createSpinner" class="spinner hidden" style="width: 20px; height: 20px;"></div>
+              </button>
+              <div id="createError" class="hidden mt-4"></div>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Check if user is logged in and is auto-entrepreneur
+    if (!isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const user = getCurrentUser();
+    if (!user || user.type !== 'autoentrepreneur') {
+      showError('Seuls les auto-entrepreneurs peuvent créer des services.');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 2000);
+    }
+
+    // Image preview function
+    function previewImages(imageUrls) {
+      const previewContainer = document.getElementById('imagePreview');
+      previewContainer.innerHTML = '';
+
+      if (!imageUrls.trim()) return;
+
+      const urls = imageUrls.split(',').map(url => url.trim()).filter(url => url);
+
+      urls.forEach((url, index) => {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'image-preview-item';
+        previewItem.innerHTML = `
+          <img src="${url}" alt="Aperçu ${index + 1}" onerror="this.parentElement.style.display='none'">
+          <button type="button" class="image-preview-remove" onclick="removeImage(${index})">&times;</button>
+        `;
+        previewContainer.appendChild(previewItem);
+      });
+    }
+
+    function removeImage(index) {
+      const imageInput = document.getElementById('imageUrl');
+      const urls = imageInput.value.split(',').map(url => url.trim()).filter(url => url);
+      urls.splice(index, 1);
+      imageInput.value = urls.join(', ');
+      previewImages(imageInput.value);
+    }
+
+    // Form submission
+    document.getElementById('createServiceForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const createBtn = document.getElementById('createBtn');
+      const createBtnText = document.getElementById('createBtnText');
+      const createSpinner = document.getElementById('createSpinner');
+      const errorDiv = document.getElementById('createError');
+
+      // Show loading state
+      createBtn.disabled = true;
+      createBtnText.classList.add('hidden');
+      createSpinner.classList.remove('hidden');
+      errorDiv.classList.add('hidden');
+
+      try {
+        const serviceData = {
+          title: form.title.value,
+          description: form.description.value,
+          category: form.category.value,
+          price: parseFloat(form.price.value),
+          images: form.images.value || '',
+          availability: form.availability.value
+        };
+
+        const data = await ApiClient.createService(serviceData);
+
+        if (data.success) {
+          // Show success state
+          createBtnText.textContent = '✅ Service créé!';
+          createBtnText.classList.remove('hidden');
+          createSpinner.classList.add('hidden');
+
+          showSuccess('Service créé avec succès! Redirection...');
+
+          setTimeout(() => {
+            window.location.href = 'services.html';
+          }, 2000);
+        }
+      } catch (error) {
+        // Show error state
+        createBtn.disabled = false;
+        createBtnText.textContent = '🚀 Créer le service';
+        createBtnText.classList.remove('hidden');
+        createSpinner.classList.add('hidden');
+
+        errorDiv.innerHTML = `
+          <div class="alert alert-error">
+            <strong>Erreur:</strong> ${error.message || 'Erreur lors de la création du service'}
+          </div>
+        `;
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    // Auto-focus on title field
+    document.querySelector('input[name="title"]').focus();
+  </script>
+</body>
+</html>

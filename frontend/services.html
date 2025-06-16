@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services - Auto-Entrepreneur Tunisie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="description" content="Découvrez tous les services proposés par nos auto-entrepreneurs tunisiens. Développement, design, marketing et plus encore.">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="assets/logo.png" alt="TunisiaFreelance Logo" class="logo">
+          <a href="index.html" class="logo-text" style="text-decoration: none;">Auto-Entrepreneur</a>
+        </div>
+        <nav class="nav-section">
+          <a href="index.html" class="btn btn-secondary">Accueil</a>
+          <a href="login.html" class="btn btn-secondary">Se connecter</a>
+          <a href="register.html" class="btn btn-primary">S'inscrire</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <section style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: var(--white); padding: 3rem 0;">
+    <div class="container text-center">
+      <h1 class="text-4xl font-bold mb-4">Découvrez nos services</h1>
+      <p class="text-lg opacity-90">Trouvez l'auto-entrepreneur parfait pour votre projet</p>
+    </div>
+  </section>
+
+  <!-- Search and Filters -->
+  <section style="padding: 2rem 0; background: var(--white);">
+    <div class="container">
+      <div class="search-section">
+        <form id="searchForm" class="search-form">
+          <div class="search-input">
+            <label class="form-label">Rechercher</label>
+            <input type="text" name="name" class="form-input" placeholder="Nom du service, mot-clé...">
+          </div>
+          <div style="min-width: 200px;">
+            <label class="form-label">Catégorie</label>
+            <select name="category" class="form-select">
+              <option value="">Toutes catégories</option>
+              <option value="Développement">💻 Développement</option>
+              <option value="Graphisme">🎨 Graphisme & Design</option>
+              <option value="Marketing">📈 Marketing Digital</option>
+              <option value="Rédaction">✍️ Rédaction</option>
+              <option value="Traduction">🌐 Traduction</option>
+              <option value="Vidéo">🎬 Vidéo & Animation</option>
+              <option value="Musique">🎵 Musique & Audio</option>
+              <option value="Business">💼 Business</option>
+            </select>
+          </div>
+          <div style="min-width: 150px;">
+            <label class="form-label">Budget</label>
+            <select name="budget" class="form-select">
+              <option value="">Tous budgets</option>
+              <option value="0-100">0 - 100 DT</option>
+              <option value="100-500">100 - 500 DT</option>
+              <option value="500-1000">500 - 1000 DT</option>
+              <option value="1000+">1000+ DT</option>
+            </select>
+          </div>
+          <div style="align-self: end;">
+            <button type="submit" class="btn btn-primary">
+              🔍 Rechercher
+            </button>
+          </div>
+        </form>
+
+        <div class="flex justify-between items-center mt-4">
+          <div id="resultsCount" class="text-sm text-gray-600"></div>
+          <button type="button" id="addServiceBtn" class="btn btn-success hidden">
+            ➕ Ajouter un service
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Grid -->
+  <section style="padding: 2rem 0; background: var(--gray-50);">
+    <div class="container">
+      <div id="servicesList" class="grid grid-3">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- Load More Button -->
+      <div id="loadMoreSection" class="text-center mt-8 hidden">
+        <button id="loadMoreBtn" class="btn btn-secondary">Charger plus de services</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-text">
+          <div class="text-2xl font-bold mb-2" style="color: var(--primary-light);">Auto-Entrepreneur Tunisie</div>
+          <p class="mb-4">La plateforme qui connecte les auto-entrepreneurs tunisiens avec leurs clients</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html" class="footer-link">Accueil</a>
+          <a href="services.html" class="footer-link">Services</a>
+          <a href="#" class="footer-link">À propos</a>
+          <a href="#" class="footer-link">Contact</a>
+        </div>
+        <div class="text-sm text-gray-500">
+          &copy; 2025 Auto-Entrepreneur Tunisie. Tous droits réservés.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    let currentServices = [];
+    let currentFilters = {};
+
+    function getCategoryIcon(category) {
+      const icons = {
+        'Développement': '💻',
+        'Graphisme': '🎨',
+        'Marketing': '📈',
+        'Rédaction': '✍️',
+        'Traduction': '🌐',
+        'Vidéo': '🎬',
+        'Musique': '🎵',
+        'Business': '💼'
+      };
+      return icons[category] || '⚡';
+    }
+
+    function renderServices(services) {
+      const container = document.getElementById('servicesList');
+      const countElement = document.getElementById('resultsCount');
+
+      if (services.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-xl font-semibold mb-2">Aucun service trouvé</h3>
+            <p class="text-gray-600">Essayez de modifier vos critères de recherche</p>
+          </div>
+        `;
+        countElement.textContent = '';
+        return;
+      }
+
+      countElement.textContent = `${services.length} service${services.length > 1 ? 's' : ''} trouvé${services.length > 1 ? 's' : ''}`;
+
+      container.innerHTML = services.map(s => `
+        <div class="service-card animate-fade-in">
+          <img src="${s.images ? s.images.split(',')[0] : 'assets/logo.png'}"
+               alt="${s.title}"
+               class="service-image"
+               onerror="this.src='assets/logo.png'">
+
+          <div class="service-content">
+            <div class="service-meta">
+              <span class="service-price">${s.price} DT</span>
+              <span class="service-category">
+                ${getCategoryIcon(s.category)} ${s.category}
+              </span>
+            </div>
+
+            <h3 class="service-title">${s.title}</h3>
+            <p class="service-description">
+              ${s.description.length > 120 ? s.description.substring(0, 120) + '...' : s.description}
+            </p>
+
+            <div class="service-footer">
+              <div class="service-author">
+                <img src="assets/user1.jpg" alt="Avatar" class="author-avatar">
+                <span>Par ${s.user_name || 'Auto-entrepreneur'}</span>
+              </div>
+
+              <div class="flex gap-2">
+                <a href="profile.html?id=${s.user_id}" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                  👤 Profil
+                </a>
+                <a href="service.html?id=${s.id}" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                  👁️ Détails
+                </a>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+              <div class="rating">
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="text-sm text-gray-600 ml-2">4.9 (${Math.floor(Math.random() * 50) + 10} avis)</span>
+              </div>
+              <div class="text-sm text-gray-500">
+                ${s.views || 0} vues
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadServices(filters = {}) {
+      try {
+        // Show loading
+        document.getElementById('servicesList').innerHTML = `
+          <div class="col-span-full loading">
+            <div class="spinner"></div>
+          </div>
+        `;
+
+        currentFilters = filters;
+        const services = await ApiClient.getServices(filters);
+        currentServices = services;
+        renderServices(services);
+
+        // Add animation delay for each card
+        setTimeout(() => {
+          document.querySelectorAll('.service-card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+          });
+        }, 100);
+
+      } catch (error) {
+        showError('Erreur lors du chargement des services: ' + error.message);
+        document.getElementById('servicesList').innerHTML = `
+          <div class="col-span-full text-center py-12">
+            <div class="alert alert-error">
+              <p>Erreur lors du chargement des services. Veuillez réessayer.</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // Search form handler
+    document.getElementById('searchForm').onsubmit = function(e) {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const filters = {
+        name: formData.get('name'),
+        category: formData.get('category'),
+        budget: formData.get('budget')
+      };
+
+      // Remove empty filters
+      Object.keys(filters).forEach(key => {
+        if (!filters[key]) delete filters[key];
+      });
+
+      loadServices(filters);
+    }
+
+    // Show add service button if user is auto-entrepreneur
+    const user = getCurrentUser();
+    if (user && user.type === 'autoentrepreneur') {
+      document.getElementById('addServiceBtn').classList.remove('hidden');
+      document.getElementById('addServiceBtn').onclick = function() {
+        window.location.href = 'service_create.html';
+      };
+    }
+
+    // Load URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialFilters = {};
+    if (urlParams.get('category')) initialFilters.category = urlParams.get('category');
+    if (urlParams.get('freelancer')) initialFilters.user_id = urlParams.get('freelancer');
+
+    // Initial load
+    loadServices(initialFilters);
+
+    // Set form values from URL params
+    if (urlParams.get('category')) {
+      document.querySelector('select[name="category"]').value = urlParams.get('category');
+    }
+  </script>
+</body>
+</html>

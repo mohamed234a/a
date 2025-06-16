@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détail Service - Auto-Entrepreneur Tunisie</title>
+  <meta name="description" content="Découvrez les détails de ce service proposé par un auto-entrepreneur tunisien professionnel.">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/homepage.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <nav class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <h2 class="logo-text">🇹🇳 Auto-Entrepreneur</h2>
+        </div>
+        <div class="nav-links">
+          <a href="home.html" class="nav-link">Accueil</a>
+          <a href="services.html" class="nav-link">Services</a>
+          <div class="auth-buttons">
+            <a href="login.html" class="btn btn-secondary">Connexion</a>
+            <a href="register.html" class="btn btn-primary">Inscription</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px; min-height: 100vh; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+    <div class="container" style="max-width: 1200px; padding: 2rem;">
+
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-12">
+        <div class="spinner mx-auto mb-4"></div>
+        <p>Chargement du service...</p>
+      </div>
+
+      <!-- Service Details -->
+      <div id="serviceContent" class="hidden">
+        <!-- Content will be loaded here -->
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden text-center py-12">
+        <div class="text-6xl mb-4">😞</div>
+        <h3 class="text-xl font-semibold mb-2">Service introuvable</h3>
+        <p class="text-gray-600 mb-4">Ce service n'existe pas ou a été supprimé.</p>
+        <a href="services.html" class="btn btn-primary">Voir tous les services</a>
+      </div>
+
+    </div>
+  </main>
+  <script>
+    // Get service ID from URL
+    const params = new URLSearchParams(window.location.search);
+    const serviceId = params.get('id');
+
+    if (!serviceId) {
+      showError('ID de service manquant');
+      setTimeout(() => {
+        window.location.href = 'services.html';
+      }, 2000);
+    }
+
+    // Load service details
+    async function loadService() {
+      try {
+        showLoading();
+
+        const response = await fetch(`http://localhost:8000/backend/index.php?route=api/services&id=${serviceId}`);
+        const data = await response.json();
+
+        console.log('Service API response:', data);
+
+        if (!data.success || !data.data) {
+          showError();
+          return;
+        }
+
+        const service = data.data;
+        displayService(service);
+
+      } catch (error) {
+        console.error('Error loading service:', error);
+        showError();
+      }
+    }
+
+    function displayService(service) {
+      const serviceContent = document.getElementById('serviceContent');
+
+      // Parse images
+      let images = [];
+      if (service.images && typeof service.images === 'string') {
+        images = service.images.split(',').map(img => img.trim()).filter(img => img);
+      }
+
+      // Use placeholder if no valid images
+      if (images.length === 0 || images[0] === 'img1.jpg' || images[0] === 'aa') {
+        images = [`https://via.placeholder.com/600x400/0ea5e9/ffffff?text=${encodeURIComponent(service.title.substring(0, 20))}`];
+      }
+
+      serviceContent.innerHTML = `
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <!-- Service Images -->
+          <div class="service-images">
+            <div class="main-image mb-4">
+              <img src="${images[0]}" alt="${service.title}"
+                   class="w-full h-96 object-cover rounded-2xl shadow-lg"
+                   onerror="this.src='https://via.placeholder.com/600x400/0ea5e9/ffffff?text=Service'">
+            </div>
+            ${images.length > 1 ? `
+              <div class="thumbnail-images grid grid-cols-3 gap-2">
+                ${images.slice(1, 4).map(img => `
+                  <img src="${img}" alt="${service.title}"
+                       class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                       onclick="changeMainImage('${img}')"
+                       onerror="this.style.display='none'">
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Service Info -->
+          <div class="service-info">
+            <div class="bg-white rounded-2xl p-8 shadow-lg">
+              <h1 class="text-3xl font-bold text-gray-900 mb-4">${service.title}</h1>
+
+              <div class="flex items-center gap-4 mb-6">
+                <div class="flex items-center">
+                  <span class="text-yellow-500">⭐⭐⭐⭐⭐</span>
+                  <span class="text-gray-600 ml-2">${service.rating_average || '5.0'} (${service.rating_count || 0} avis)</span>
+                </div>
+                <div class="text-gray-500">•</div>
+                <div class="text-gray-600">${service.views_count || 0} vues</div>
+              </div>
+
+              <div class="price-section mb-6">
+                <div class="text-3xl font-bold text-blue-600 mb-2">${parseFloat(service.price).toFixed(0)} DT</div>
+                <div class="text-gray-600">Prix fixe</div>
+              </div>
+
+              <div class="service-details mb-6">
+                <div class="detail-item mb-3">
+                  <span class="font-semibold text-gray-700">Catégorie:</span>
+                  <span class="text-gray-600 ml-2">${service.category_name || service.category}</span>
+                </div>
+                <div class="detail-item mb-3">
+                  <span class="font-semibold text-gray-700">Délai de livraison:</span>
+                  <span class="text-gray-600 ml-2">${service.delivery_time || 7} jours</span>
+                </div>
+                <div class="detail-item mb-3">
+                  <span class="font-semibold text-gray-700">Révisions incluses:</span>
+                  <span class="text-gray-600 ml-2">${service.revisions_included || 1}</span>
+                </div>
+              </div>
+
+              <div class="action-buttons">
+                <button class="btn btn-primary btn-lg w-full mb-3" onclick="contactProvider()">
+                  💬 Contacter l'auto-entrepreneur
+                </button>
+                <button class="btn btn-outline w-full" onclick="saveService()">
+                  ❤️ Sauvegarder ce service
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Service Description -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">Description du service</h2>
+          <div class="prose max-w-none">
+            <p class="text-gray-700 leading-relaxed">${service.description}</p>
+          </div>
+        </div>
+
+        <!-- Provider Info -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg mb-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">À propos de l'auto-entrepreneur</h2>
+          <div class="flex items-start gap-6">
+            <div class="provider-avatar">
+              <img src="${service.user_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(service.first_name + ' ' + service.last_name)}&background=0ea5e9&color=fff&size=80`}"
+                   alt="${service.first_name} ${service.last_name}"
+                   class="w-20 h-20 rounded-full object-cover">
+            </div>
+            <div class="provider-info flex-1">
+              <h3 class="text-xl font-semibold text-gray-900 mb-2">${service.first_name} ${service.last_name}</h3>
+              ${service.business_name ? `<p class="text-gray-600 mb-2">${service.business_name}</p>` : ''}
+              <div class="flex items-center gap-4 text-sm text-gray-600 mb-4">
+                <span>⭐ 5.0 (24 avis)</span>
+                <span>•</span>
+                <span>📍 Tunisie</span>
+                <span>•</span>
+                <span>🕒 Répond en 2h</span>
+              </div>
+              <a href="profile.html?id=${service.user_id}" class="btn btn-outline">
+                Voir le profil complet
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div id="reviewsSection" class="bg-white rounded-2xl p-8 shadow-lg">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Avis clients</h2>
+          <div class="reviews-content">
+            <div class="text-center py-8 text-gray-500">
+              <div class="text-4xl mb-2">💬</div>
+              <p>Aucun avis pour le moment</p>
+              <p class="text-sm">Soyez le premier à laisser un avis sur ce service</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Hide loading and show content
+      hideLoading();
+      serviceContent.classList.remove('hidden');
+    }
+
+    // Utility functions
+    function showLoading() {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('serviceContent').classList.add('hidden');
+      document.getElementById('errorState').classList.add('hidden');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingState').classList.add('hidden');
+    }
+
+    function showError() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('serviceContent').classList.add('hidden');
+      document.getElementById('errorState').classList.remove('hidden');
+    }
+
+    function changeMainImage(imageSrc) {
+      const mainImage = document.querySelector('.main-image img');
+      if (mainImage) {
+        mainImage.src = imageSrc;
+      }
+    }
+
+    function contactProvider() {
+      // For now, show a message - in a real app, this would open a messaging system
+      alert('Fonctionnalité de messagerie à venir! Pour le moment, vous pouvez contacter l\'auto-entrepreneur via son profil.');
+    }
+
+    function saveService() {
+      // For now, show a message - in a real app, this would save to favorites
+      alert('Service sauvegardé! (Fonctionnalité de favoris à venir)');
+    }
+
+    // Load service on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadService();
+    });
+  </script>
+</body>
+</html>

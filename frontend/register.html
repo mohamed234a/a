@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription - Auto-Entrepreneur Tunisie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="description" content="Rejoignez TunisiaFreelance et commencez à proposer vos services ou trouvez les meilleurs freelancers tunisiens.">
+</head>
+<body style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); min-height: 100vh; padding: 2rem 0;">
+
+  <!-- Register Container -->
+  <div class="container">
+    <div style="max-width: 500px; margin: 0 auto;">
+
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <a href="index.html" class="inline-block mb-4">
+          <img src="assets/logo.png" alt="TunisiaFreelance Logo" class="logo mx-auto">
+        </a>
+        <h1 class="text-3xl font-bold text-white mb-2">Rejoignez Auto-Entrepreneur Tunisie</h1>
+        <p class="text-white opacity-90">Créez votre compte et commencez dès aujourd'hui</p>
+      </div>
+
+      <!-- Account Type Selection -->
+      <div class="grid grid-2 gap-4 mb-6">
+        <div class="card text-center cursor-pointer account-type-card" data-type="autoentrepreneur">
+          <div class="text-4xl mb-3">💼</div>
+          <h3 class="font-semibold mb-2">Auto-Entrepreneur</h3>
+          <p class="text-sm text-gray-600">Proposez vos services et trouvez des clients</p>
+        </div>
+        <div class="card text-center cursor-pointer account-type-card" data-type="client">
+          <div class="text-4xl mb-3">🎯</div>
+          <h3 class="font-semibold mb-2">Client</h3>
+          <p class="text-sm text-gray-600">Trouvez et engagez des freelancers</p>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div class="card animate-fade-in">
+        <form id="registerForm">
+          <input type="hidden" name="type" id="selectedType" value="">
+
+          <div class="grid grid-2 gap-4">
+            <div class="form-group">
+              <label class="form-label">Prénom</label>
+              <input type="text" name="firstName" class="form-input" placeholder="Ahmed" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nom</label>
+              <input type="text" name="lastName" class="form-input" placeholder="Ben Ali" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-input" placeholder="ahmed@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Téléphone (optionnel)</label>
+            <input type="tel" name="phone" class="form-input" placeholder="+216 XX XXX XXX">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mot de passe</label>
+            <input type="password" name="password" class="form-input" placeholder="••••••••" required minlength="6">
+            <div class="text-xs text-gray-500 mt-1">Minimum 6 caractères</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirmer le mot de passe</label>
+            <input type="password" name="confirmPassword" class="form-input" placeholder="••••••••" required>
+          </div>
+
+          <div class="form-group">
+            <label class="flex items-start gap-3 text-sm">
+              <input type="checkbox" name="terms" required class="mt-1">
+              <span>
+                J'accepte les <a href="#" class="text-primary hover:text-primary-dark">conditions d'utilisation</a>
+                et la <a href="#" class="text-primary hover:text-primary-dark">politique de confidentialité</a>
+              </span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full mb-4" id="registerBtn">
+            <span id="registerBtnText">🚀 Créer mon compte</span>
+            <div id="registerSpinner" class="spinner hidden" style="width: 20px; height: 20px;"></div>
+          </button>
+
+          <div id="registerError" class="hidden"></div>
+        </form>
+
+        <!-- Divider -->
+        <div class="flex items-center my-6">
+          <div class="flex-1 border-t border-gray-300"></div>
+          <span class="px-4 text-sm text-gray-500">ou</span>
+          <div class="flex-1 border-t border-gray-300"></div>
+        </div>
+
+        <!-- Social Register -->
+        <div class="space-y-3">
+          <button class="btn btn-secondary w-full" onclick="showError('Inscription Google bientôt disponible')">
+            🔍 S'inscrire avec Google
+          </button>
+          <button class="btn btn-secondary w-full" onclick="showError('Inscription Facebook bientôt disponible')">
+            📘 S'inscrire avec Facebook
+          </button>
+        </div>
+      </div>
+
+      <!-- Login Link -->
+      <div class="text-center mt-6">
+        <p class="text-white opacity-90">
+          Déjà un compte ?
+          <a href="login.html" class="text-white font-semibold hover:text-primary-light underline">
+            Se connecter
+          </a>
+        </p>
+      </div>
+
+      <!-- Back to Home -->
+      <div class="text-center mt-4">
+        <a href="index.html" class="text-white opacity-75 hover:opacity-100 text-sm">
+          ← Retour à l'accueil
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Account type selection
+    document.querySelectorAll('.account-type-card').forEach(card => {
+      card.addEventListener('click', function() {
+        // Remove active class from all cards
+        document.querySelectorAll('.account-type-card').forEach(c => {
+          c.classList.remove('border-primary', 'bg-primary-light', 'bg-opacity-10');
+          c.classList.add('border-gray-200');
+        });
+
+        // Add active class to clicked card
+        this.classList.remove('border-gray-200');
+        this.classList.add('border-primary', 'bg-primary-light', 'bg-opacity-10');
+
+        // Set the hidden input value
+        document.getElementById('selectedType').value = this.dataset.type;
+
+        // Update form title based on selection
+        const title = this.dataset.type === 'autoentrepreneur' ?
+          'Créer un compte Auto-Entrepreneur' :
+          'Créer un compte Client';
+        document.querySelector('h1').textContent = title;
+      });
+    });
+
+    // Check URL parameters for pre-selection
+    const urlParams = new URLSearchParams(window.location.search);
+    const preselectedType = urlParams.get('type');
+    if (preselectedType) {
+      const card = document.querySelector(`[data-type="${preselectedType}"]`);
+      if (card) {
+        card.click();
+      }
+    }
+
+    // Form submission
+    document.getElementById('registerForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const registerBtn = document.getElementById('registerBtn');
+      const registerBtnText = document.getElementById('registerBtnText');
+      const registerSpinner = document.getElementById('registerSpinner');
+      const errorDiv = document.getElementById('registerError');
+
+      // Validation
+      if (!form.selectedType.value) {
+        errorDiv.innerHTML = `
+          <div class="alert alert-error">
+            <strong>Erreur:</strong> Veuillez sélectionner un type de compte
+          </div>
+        `;
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (form.password.value !== form.confirmPassword.value) {
+        errorDiv.innerHTML = `
+          <div class="alert alert-error">
+            <strong>Erreur:</strong> Les mots de passe ne correspondent pas
+          </div>
+        `;
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      if (form.password.value.length < 6) {
+        errorDiv.innerHTML = `
+          <div class="alert alert-error">
+            <strong>Erreur:</strong> Le mot de passe doit contenir au moins 6 caractères
+          </div>
+        `;
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      // Show loading state
+      registerBtn.disabled = true;
+      registerBtnText.classList.add('hidden');
+      registerSpinner.classList.remove('hidden');
+      errorDiv.classList.add('hidden');
+
+      try {
+        const userData = {
+          name: `${form.firstName.value} ${form.lastName.value}`,
+          email: form.email.value,
+          phone: form.phone.value || null,
+          password: form.password.value,
+          type: form.selectedType.value
+        };
+
+        const data = await ApiClient.register(userData);
+
+        if (data.success) {
+          // Show success state
+          registerBtnText.textContent = '✅ Compte créé!';
+          registerBtnText.classList.remove('hidden');
+          registerSpinner.classList.add('hidden');
+
+          showSuccess('Inscription réussie! Redirection vers la connexion...');
+
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+        }
+      } catch (error) {
+        // Show error state
+        registerBtn.disabled = false;
+        registerBtnText.textContent = '🚀 Créer mon compte';
+        registerBtnText.classList.remove('hidden');
+        registerSpinner.classList.add('hidden');
+
+        errorDiv.innerHTML = `
+          <div class="alert alert-error">
+            <strong>Erreur d'inscription:</strong> ${error.message || 'Une erreur est survenue'}
+          </div>
+        `;
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    // Auto-focus on first name field
+    document.querySelector('input[name="firstName"]').focus();
+
+    // Password strength indicator
+    document.querySelector('input[name="password"]').addEventListener('input', function(e) {
+      const password = e.target.value;
+      const strength = getPasswordStrength(password);
+
+      // You can add a password strength indicator here
+    });
+
+    function getPasswordStrength(password) {
+      let strength = 0;
+      if (password.length >= 6) strength++;
+      if (password.match(/[a-z]/)) strength++;
+      if (password.match(/[A-Z]/)) strength++;
+      if (password.match(/[0-9]/)) strength++;
+      if (password.match(/[^a-zA-Z0-9]/)) strength++;
+      return strength;
+    }
+
+    // Check if user is already logged in
+    if (isLoggedIn()) {
+      showSuccess('Vous êtes déjà connecté! Redirection...');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
