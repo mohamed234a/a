@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto-entrepreneurs - Auto-Entrepreneur Tunisie</title>
+  <meta name="description" content="Découvrez les meilleurs auto-entrepreneurs tunisiens. Trouvez le professionnel parfait pour votre projet.">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/homepage.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: #f8fafc;">
+  <!-- Header -->
+  <header class="header">
+    <nav class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <a href="home.html" style="text-decoration: none;">
+            <h2 class="logo-text">🇹🇳 Auto-Entrepreneur</h2>
+          </a>
+        </div>
+        <div class="nav-links">
+          <a href="home.html" class="nav-link">Accueil</a>
+          <a href="services.html" class="nav-link">Services</a>
+          <a href="autoentrepreneurs.html" class="nav-link active">Auto-entrepreneurs</a>
+          <div class="auth-buttons">
+            <a href="login.html" class="btn btn-secondary">Connexion</a>
+            <a href="register.html" class="btn btn-primary">Inscription</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px; min-height: 100vh;">
+    <div class="container" style="max-width: 1400px; padding: 2rem;">
+      
+      <!-- Header Section -->
+      <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 3rem; font-weight: 800; color: #1e293b; margin-bottom: 1rem;">
+          👥 Auto-entrepreneurs Tunisiens
+        </h1>
+        <p style="font-size: 1.25rem; color: #64748b; max-width: 600px; margin: 0 auto;">
+          Découvrez les professionnels les plus talentueux de Tunisie
+        </p>
+      </div>
+
+      <!-- Search and Filters -->
+      <div style="background: white; border-radius: 16px; padding: 2rem; margin-bottom: 3rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: center;">
+          <div>
+            <input type="text" id="searchInput" placeholder="Rechercher un auto-entrepreneur..." 
+                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <select id="categoryFilter" style="padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+            <option value="">Toutes les catégories</option>
+            <option value="Développement">Développement</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Rédaction">Rédaction</option>
+            <option value="Traduction">Traduction</option>
+            <option value="Consulting">Consulting</option>
+          </select>
+          <button class="btn btn-primary" onclick="applyFilters()">🔍 Rechercher</button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" style="text-align: center; padding: 4rem;">
+        <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+        <p style="color: #64748b;">Chargement des auto-entrepreneurs...</p>
+      </div>
+
+      <!-- Auto-entrepreneurs Grid -->
+      <div id="autoentrepreneursGrid" style="display: none;">
+        <!-- Content will be loaded here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" style="display: none; text-align: center; padding: 4rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">👥</div>
+        <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">Aucun auto-entrepreneur trouvé</h3>
+        <p style="color: #64748b; margin-bottom: 2rem;">Essayez de modifier vos critères de recherche</p>
+        <button class="btn btn-primary" onclick="clearFilters()">Effacer les filtres</button>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" style="display: none; text-align: center; padding: 4rem;">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">😞</div>
+        <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">Erreur de chargement</h3>
+        <p style="color: #64748b; margin-bottom: 2rem;">Impossible de charger les auto-entrepreneurs</p>
+        <button class="btn btn-primary" onclick="loadAutoentrepreneurs()">Réessayer</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let allAutoentrepreneurs = [];
+    let filteredAutoentrepreneurs = [];
+
+    // Load auto-entrepreneurs from API
+    async function loadAutoentrepreneurs() {
+      try {
+        showLoading();
+        
+        const response = await fetch('http://localhost:8000/backend/index.php?route=api/autoentrepreneurs');
+        const data = await response.json();
+        
+        console.log('Auto-entrepreneurs API response:', data);
+        
+        if (data.success && data.data && Array.isArray(data.data)) {
+          allAutoentrepreneurs = data.data;
+          filteredAutoentrepreneurs = [...allAutoentrepreneurs];
+          displayAutoentrepreneurs(filteredAutoentrepreneurs);
+        } else {
+          showError();
+        }
+      } catch (error) {
+        console.error('Error loading auto-entrepreneurs:', error);
+        showError();
+      }
+    }
+
+    function displayAutoentrepreneurs(autoentrepreneurs) {
+      const grid = document.getElementById('autoentrepreneursGrid');
+      
+      hideAllStates();
+      
+      if (autoentrepreneurs.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      grid.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem;">
+          ${autoentrepreneurs.map(ae => `
+            <div style="background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; cursor: pointer;" 
+                 onclick="viewProfile(${ae.id})"
+                 onmouseenter="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.15)'"
+                 onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.1)'">
+              
+              <div style="text-align: center; margin-bottom: 1.5rem;">
+                <img src="${ae.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ae.name)}&background=0ea5e9&color=fff&size=100`}" 
+                     alt="${ae.name}"
+                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(14, 165, 233, 0.2); margin-bottom: 1rem;"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(ae.name)}&background=0ea5e9&color=fff&size=100'">
+                <h3 style="font-size: 1.375rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${ae.name}</h3>
+                <p style="color: #0ea5e9; font-weight: 600; margin-bottom: 1rem;">${ae.categories || 'Auto-entrepreneur'}</p>
+              </div>
+              
+              <div style="margin-bottom: 1.5rem;">
+                <p style="color: #64748b; line-height: 1.6; text-align: center;">
+                  ${ae.bio ? ae.bio.substring(0, 120) + (ae.bio.length > 120 ? '...' : '') : 'Auto-entrepreneur professionnel disponible pour vos projets.'}
+                </p>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: 8px;">
+                <div style="text-align: center;">
+                  <div style="font-size: 1.25rem; font-weight: 700; color: #0ea5e9;">⭐ Nouveau</div>
+                  <div style="font-size: 0.875rem; color: #64748b;">Profil</div>
+                </div>
+                <div style="text-align: center;">
+                  <div style="font-size: 1.25rem; font-weight: 700; color: #0ea5e9;">🚀</div>
+                  <div style="font-size: 0.875rem; color: #64748b;">Disponible</div>
+                </div>
+                <div style="text-align: center;">
+                  <div style="font-size: 1.25rem; font-weight: 700; color: #0ea5e9;">📍</div>
+                  <div style="font-size: 0.875rem; color: #64748b;">${ae.location || 'Tunisie'}</div>
+                </div>
+              </div>
+              
+              <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <div style="display: grid; gap: 0.5rem; font-size: 0.875rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>📧</span>
+                    <a href="mailto:${ae.email}" style="color: #0ea5e9; text-decoration: none;">${ae.email}</a>
+                  </div>
+                  ${ae.phone ? `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span>📱</span>
+                      <a href="tel:${ae.phone}" style="color: #16a34a; text-decoration: none;">${ae.phone}</a>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.75rem;">
+                <button class="btn btn-outline" onclick="event.stopPropagation(); viewProfile(${ae.id})" style="flex: 1; padding: 0.75rem;">
+                  👁️ Voir profil
+                </button>
+                <button class="btn btn-primary" onclick="event.stopPropagation(); showContactInfo('${ae.email}', '${ae.phone || ''}')" style="flex: 1; padding: 0.75rem;">
+                  📞 Contact
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      grid.style.display = 'block';
+    }
+
+    function showLoading() {
+      hideAllStates();
+      document.getElementById('loadingState').style.display = 'block';
+    }
+
+    function showEmpty() {
+      hideAllStates();
+      document.getElementById('emptyState').style.display = 'block';
+    }
+
+    function showError() {
+      hideAllStates();
+      document.getElementById('errorState').style.display = 'block';
+    }
+
+    function hideAllStates() {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('autoentrepreneursGrid').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('errorState').style.display = 'none';
+    }
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      
+      filteredAutoentrepreneurs = allAutoentrepreneurs.filter(ae => {
+        const matchesSearch = !searchTerm || 
+          ae.name.toLowerCase().includes(searchTerm) ||
+          (ae.bio && ae.bio.toLowerCase().includes(searchTerm)) ||
+          (ae.categories && ae.categories.toLowerCase().includes(searchTerm));
+        
+        const matchesCategory = !category || 
+          (ae.categories && ae.categories.includes(category));
+        
+        return matchesSearch && matchesCategory;
+      });
+      
+      displayAutoentrepreneurs(filteredAutoentrepreneurs);
+    }
+
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('categoryFilter').value = '';
+      filteredAutoentrepreneurs = [...allAutoentrepreneurs];
+      displayAutoentrepreneurs(filteredAutoentrepreneurs);
+    }
+
+    function viewProfile(aeId) {
+      window.location.href = `profile.html?id=${aeId}`;
+    }
+
+    function showContactInfo(email, phone) {
+      const phoneText = phone ? `\n📱 Téléphone: ${phone}` : '';
+      alert(`📞 Informations de contact:\n\n📧 Email: ${email}${phoneText}\n\n💡 Contactez directement cet auto-entrepreneur pour discuter de votre projet!`);
+    }
+
+    // Add search on enter key
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          applyFilters();
+        }
+      });
+      
+      // Load auto-entrepreneurs
+      loadAutoentrepreneurs();
+    });
+
+    // Add CSS animation for spinner
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

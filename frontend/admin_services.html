@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion Services - Admin Dashboard</title>
+  <meta name="description" content="Gérer les services de la plateforme Auto-Entrepreneur Tunisie">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/homepage.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: #f8fafc;">
+  <!-- Header -->
+  <header class="header" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+    <nav class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <h2 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 800;">
+            🔐 Admin Dashboard
+          </h2>
+        </div>
+        <div class="nav-links">
+          <a href="admin_dashboard.html" class="nav-link" style="color: rgba(255,255,255,0.8);">Dashboard</a>
+          <a href="admin_users.html" class="nav-link" style="color: rgba(255,255,255,0.8);">Utilisateurs</a>
+          <a href="admin_services.html" class="nav-link" style="color: white;">Services</a>
+          <a href="admin_premium.html" class="nav-link" style="color: rgba(255,255,255,0.8);">Premium</a>
+          <div class="auth-buttons">
+            <a href="home.html" class="btn btn-secondary">Voir le site</a>
+            <button class="btn btn-error" onclick="adminLogout()">Déconnexion</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px; min-height: 100vh;">
+    <div class="container" style="max-width: 1400px; padding: 2rem;">
+      
+      <!-- Header Section -->
+      <div style="background: white; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">
+              🛍️ Gestion des Services
+            </h1>
+            <p style="color: #64748b; font-size: 1.125rem;">
+              Gérez tous les services de la plateforme
+            </p>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn btn-outline" onclick="exportServices()">📊 Exporter</button>
+            <button class="btn btn-primary" onclick="refreshServices()">🔄 Actualiser</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Search -->
+      <div style="background: white; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: center;">
+          <div>
+            <input type="text" id="searchServices" placeholder="Rechercher un service..." 
+                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <select id="categoryFilter" style="padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+            <option value="">Toutes les catégories</option>
+            <option value="Développement">Développement</option>
+            <option value="Design">Design</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Rédaction">Rédaction</option>
+            <option value="Traduction">Traduction</option>
+            <option value="Consulting">Consulting</option>
+          </select>
+          <button class="btn btn-primary" onclick="applyFilters()">🔍 Filtrer</button>
+        </div>
+      </div>
+
+      <!-- Services Grid -->
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden;">
+        <div style="padding: 2rem 2rem 1rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">
+            Liste des services
+          </h2>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="servicesLoading" style="text-align: center; padding: 3rem;">
+          <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+          <p style="color: #64748b;">Chargement des services...</p>
+        </div>
+
+        <!-- Services Grid -->
+        <div id="servicesGrid" style="display: none; padding: 2rem;">
+          <!-- Content will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="servicesEmpty" style="display: none; text-align: center; padding: 3rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🛍️</div>
+          <h3 style="color: #1e293b; margin-bottom: 0.5rem;">Aucun service trouvé</h3>
+          <p style="color: #64748b;">Aucun service ne correspond aux critères de recherche</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Service Details Modal -->
+  <div id="serviceModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 2rem;">
+    <div style="background: white; border-radius: 16px; max-width: 800px; margin: 0 auto; padding: 2rem; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">Détails du service</h2>
+        <button onclick="closeServiceModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+      </div>
+      
+      <div id="serviceModalContent">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allServices = [];
+    let filteredServices = [];
+
+    // Check admin authentication
+    function isAdminLoggedIn() {
+      return localStorage.getItem('admin_token') === 'admin_authenticated';
+    }
+
+    function adminLogout() {
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      window.location.href = 'admin_login.html';
+    }
+
+    // Redirect if not logged in as admin
+    if (!isAdminLoggedIn()) {
+      window.location.href = 'admin_login.html';
+    }
+
+    // Load services from API
+    async function loadServices() {
+      try {
+        showLoading();
+        
+        const response = await fetch('http://localhost:8000/backend/index.php?route=api/services');
+        const data = await response.json();
+        
+        if (data.success && data.data && Array.isArray(data.data)) {
+          allServices = data.data;
+          filteredServices = [...allServices];
+          displayServices(filteredServices);
+        } else {
+          showEmpty();
+        }
+      } catch (error) {
+        console.error('Error loading services:', error);
+        showEmpty();
+      }
+    }
+
+    function displayServices(services) {
+      const container = document.getElementById('servicesGrid');
+      
+      hideAllStates();
+      
+      if (services.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+          ${services.map(service => `
+            <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer;" 
+                 onclick="viewService(${service.id})"
+                 onmouseenter="this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.1)'; this.style.transform='translateY(-4px)'"
+                 onmouseleave="this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+              
+              <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
+                <h3 style="font-weight: 600; color: #1e293b; margin: 0; flex: 1; font-size: 1.125rem;">${service.title}</h3>
+                <span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.875rem; font-weight: 500; margin-left: 1rem;">${service.price} DT</span>
+              </div>
+              
+              <p style="color: #64748b; margin-bottom: 1rem; line-height: 1.5; font-size: 0.875rem;">${service.description.substring(0, 120)}${service.description.length > 120 ? '...' : ''}</p>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="background: #f1f5f9; color: #475569; padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.875rem;">${service.category}</span>
+                <span style="color: #64748b; font-size: 0.875rem;">ID: ${service.id}</span>
+              </div>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="color: #64748b; font-size: 0.875rem;">Par: ${service.first_name || 'Utilisateur'} ${service.last_name || ''}</span>
+                <span style="color: #64748b; font-size: 0.875rem;">${service.views || 0} vues</span>
+              </div>
+              
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-outline" onclick="event.stopPropagation(); viewService(${service.id})" style="flex: 1; padding: 0.5rem; font-size: 0.875rem;">
+                  👁️ Voir
+                </button>
+                <button class="btn btn-secondary" onclick="event.stopPropagation(); editService(${service.id})" style="flex: 1; padding: 0.5rem; font-size: 0.875rem;">
+                  ✏️ Modifier
+                </button>
+                <button class="btn btn-error" onclick="event.stopPropagation(); deleteService(${service.id})" style="padding: 0.5rem; font-size: 0.875rem;">
+                  🗑️
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      container.style.display = 'block';
+    }
+
+    function showLoading() {
+      hideAllStates();
+      document.getElementById('servicesLoading').style.display = 'block';
+    }
+
+    function showEmpty() {
+      hideAllStates();
+      document.getElementById('servicesEmpty').style.display = 'block';
+    }
+
+    function hideAllStates() {
+      document.getElementById('servicesLoading').style.display = 'none';
+      document.getElementById('servicesGrid').style.display = 'none';
+      document.getElementById('servicesEmpty').style.display = 'none';
+    }
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchServices').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      
+      filteredServices = allServices.filter(service => {
+        const matchesSearch = !searchTerm || 
+          service.title.toLowerCase().includes(searchTerm) ||
+          service.description.toLowerCase().includes(searchTerm) ||
+          (service.first_name && service.first_name.toLowerCase().includes(searchTerm)) ||
+          (service.last_name && service.last_name.toLowerCase().includes(searchTerm));
+        
+        const matchesCategory = !category || service.category === category;
+        
+        return matchesSearch && matchesCategory;
+      });
+      
+      displayServices(filteredServices);
+    }
+
+    function refreshServices() {
+      loadServices();
+    }
+
+    function exportServices() {
+      alert('📊 Export des services\n\nFonctionnalité à venir:\n• Export CSV\n• Export Excel\n• Statistiques détaillées');
+    }
+
+    function viewService(serviceId) {
+      const service = allServices.find(s => s.id == serviceId);
+      if (!service) return;
+      
+      const imageUrl = service.images && service.images !== 'img1.jpg' && service.images !== 'aa' 
+        ? service.images.split(',')[0] 
+        : `https://via.placeholder.com/400x250/0ea5e9/ffffff?text=${encodeURIComponent(service.title.substring(0, 20))}`;
+      
+      document.getElementById('serviceModalContent').innerHTML = `
+        <div style="display: grid; gap: 1.5rem;">
+          <div style="text-align: center;">
+            <img src="${imageUrl}" alt="${service.title}" 
+                 style="width: 100%; max-width: 400px; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem;"
+                 onerror="this.src='https://via.placeholder.com/400x250/0ea5e9/ffffff?text=Service'">
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${service.title}</h3>
+            <p style="color: #0ea5e9; font-weight: 600; font-size: 1.125rem;">${service.price} DT</p>
+          </div>
+          
+          <div style="display: grid; gap: 1rem;">
+            <div>
+              <label style="font-weight: 600; color: #1e293b;">Description:</label>
+              <p style="margin: 0; color: #64748b; line-height: 1.6;">${service.description}</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <label style="font-weight: 600; color: #1e293b;">Catégorie:</label>
+                <p style="margin: 0; color: #64748b;">${service.category}</p>
+              </div>
+              <div>
+                <label style="font-weight: 600; color: #1e293b;">Disponibilité:</label>
+                <p style="margin: 0; color: #64748b;">${service.availability || 'Disponible'}</p>
+              </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <label style="font-weight: 600; color: #1e293b;">Auto-entrepreneur:</label>
+                <p style="margin: 0; color: #64748b;">${service.first_name || 'Utilisateur'} ${service.last_name || ''}</p>
+              </div>
+              <div>
+                <label style="font-weight: 600; color: #1e293b;">Vues:</label>
+                <p style="margin: 0; color: #64748b;">${service.views || 0}</p>
+              </div>
+            </div>
+            
+            <div>
+              <label style="font-weight: 600; color: #1e293b;">Date de création:</label>
+              <p style="margin: 0; color: #64748b;">${service.created_at || 'Non disponible'}</p>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-outline" onclick="closeServiceModal()">Fermer</button>
+            <button class="btn btn-secondary" onclick="editService(${service.id})">Modifier</button>
+            <button class="btn btn-error" onclick="deleteService(${service.id})">Supprimer</button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('serviceModal').style.display = 'block';
+    }
+
+    function editService(serviceId) {
+      alert('✏️ Modification de service\n\nFonctionnalité à venir:\n• Modifier les informations\n• Changer le statut\n• Gérer la visibilité');
+    }
+
+    async function deleteService(serviceId) {
+      const service = allServices.find(s => s.id == serviceId);
+      if (!service) return;
+
+      if (!confirm(`Êtes-vous sûr de vouloir supprimer le service "${service.title}" ?\n\n⚠️ Cette action est irréversible.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8000/backend/index.php?route=api/services&id=${serviceId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer admin_authenticated'
+          }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Remove from local data
+          allServices = allServices.filter(s => s.id != serviceId);
+          filteredServices = filteredServices.filter(s => s.id != serviceId);
+
+          // Refresh display
+          displayServices(filteredServices);
+          closeServiceModal();
+
+          // Show success message
+          showNotification(`✅ Service "${service.title}" supprimé avec succès!`, 'success');
+        } else {
+          throw new Error(data.message || 'Erreur lors de la suppression');
+        }
+
+      } catch (error) {
+        console.error('Error deleting service:', error);
+        showNotification('❌ Erreur: ' + error.message, 'error');
+      }
+    }
+
+    function closeServiceModal() {
+      document.getElementById('serviceModal').style.display = 'none';
+    }
+
+    function showNotification(message, type = 'info') {
+      // Remove existing notification
+      const existing = document.getElementById('notification');
+      if (existing) {
+        existing.remove();
+      }
+
+      // Create notification
+      const notification = document.createElement('div');
+      notification.id = 'notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        max-width: 400px;
+      `;
+
+      if (type === 'success') {
+        notification.style.background = '#d1fae5';
+        notification.style.color = '#065f46';
+        notification.style.border = '1px solid #a7f3d0';
+      } else if (type === 'error') {
+        notification.style.background = '#fee2e2';
+        notification.style.color = '#991b1b';
+        notification.style.border = '1px solid #fecaca';
+      } else {
+        notification.style.background = '#dbeafe';
+        notification.style.color = '#1e40af';
+        notification.style.border = '1px solid #93c5fd';
+      }
+
+      notification.innerHTML = message;
+      document.body.appendChild(notification);
+
+      // Animate in
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    // Add search on enter key
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('searchServices').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          applyFilters();
+        }
+      });
+      
+      // Load services
+      loadServices();
+    });
+
+    // Add CSS animation for spinner
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

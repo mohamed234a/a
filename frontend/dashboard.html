@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Auto-Entrepreneur Tunisie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="description" content="Gérez votre compte TunisiaFreelance, vos services et consultez vos statistiques.">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="assets/logo.png" alt="TunisiaFreelance Logo" class="logo">
+          <a href="index.html" class="logo-text" style="text-decoration: none;">Auto-Entrepreneur</a>
+        </div>
+        <nav class="nav-section">
+          <a href="services.html" class="btn btn-secondary">Services</a>
+          <a href="autoentrepreneurs.html" class="btn btn-secondary">Auto-entrepreneurs</a>
+          <a href="premium.html" class="btn" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white; border: none;">🌟 Premium</a>
+          <a href="profile.html" class="btn btn-secondary" id="profileLink">Mon Profil</a>
+          <button class="btn btn-error" onclick="logout()">Déconnexion</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Welcome Section -->
+  <section style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: var(--white); padding: 3rem 0;">
+    <div class="container">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h1 class="text-3xl font-bold mb-2" id="welcomeTitle">Bienvenue sur votre dashboard</h1>
+          <p class="text-lg opacity-90" id="welcomeSubtitle">Gérez votre activité et consultez vos performances</p>
+        </div>
+        <div class="flex gap-3">
+          <button class="btn btn-success" id="primaryActionBtn" style="background: var(--white); color: var(--primary);">
+            ➕ Action principale
+          </button>
+          <a href="services.html" class="btn btn-secondary" style="border-color: rgba(255,255,255,0.3); color: var(--white);">
+            📊 Voir tous les services
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Grid -->
+  <section style="padding: 3rem 0; background: var(--gray-50);">
+    <div class="container">
+      <div class="dashboard-grid" id="statsGrid">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section style="padding: 2rem 0; background: var(--white);">
+    <div class="container">
+      <div class="grid grid-2 gap-8">
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Activité récente</h3>
+            <p class="card-subtitle">Vos dernières actions sur la plateforme</p>
+          </div>
+          <div id="recentActivity">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Actions rapides</h3>
+            <p class="card-subtitle">Raccourcis vers les fonctionnalités principales</p>
+          </div>
+          <div class="space-y-3" id="quickActions">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section (for auto-entrepreneurs) -->
+  <section id="servicesSection" style="padding: 2rem 0; background: var(--gray-50); display: none;">
+    <div class="container">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Mes Services</h2>
+        <a href="service_create.html" class="btn btn-primary">➕ Nouveau service</a>
+      </div>
+      <div id="userServices" class="grid grid-3">
+        <div class="loading">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-text">
+          <div class="text-2xl font-bold mb-2" style="color: var(--primary-light);">Auto-Entrepreneur Tunisie</div>
+          <p class="mb-4">La plateforme qui connecte les auto-entrepreneurs tunisiens avec leurs clients</p>
+        </div>
+        <div class="footer-links">
+          <a href="index.html" class="footer-link">Accueil</a>
+          <a href="services.html" class="footer-link">Services</a>
+          <a href="#" class="footer-link">Support</a>
+          <a href="#" class="footer-link">Aide</a>
+        </div>
+        <div class="text-sm text-gray-500">
+          &copy; 2025 Auto-Entrepreneur Tunisie. Tous droits réservés.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Check if user is logged in
+    if (!isLoggedIn()) {
+      window.location.href = 'login.html';
+    }
+
+    const user = getCurrentUser();
+
+    // Initialize dashboard based on user type
+    function initializeDashboard() {
+      if (!user) return;
+
+      // Update welcome message
+      document.getElementById('welcomeTitle').textContent = `Bienvenue, ${user.name}!`;
+
+      // Update profile link
+      document.getElementById('profileLink').href = `profile.html?id=${user.id}`;
+
+      // Customize based on user type
+      if (user.type === 'autoentrepreneur') {
+        document.getElementById('welcomeSubtitle').textContent = 'Gérez vos services et consultez vos performances';
+        document.getElementById('primaryActionBtn').innerHTML = '➕ Nouveau service';
+        document.getElementById('primaryActionBtn').onclick = () => window.location.href = 'service_create.html';
+        document.getElementById('servicesSection').style.display = 'block';
+      } else if (user.type === 'client') {
+        document.getElementById('welcomeSubtitle').textContent = 'Trouvez les meilleurs auto-entrepreneurs pour vos projets';
+        document.getElementById('primaryActionBtn').innerHTML = '🔍 Chercher des services';
+        document.getElementById('primaryActionBtn').onclick = () => window.location.href = 'services.html';
+      } else if (user.type === 'admin') {
+        document.getElementById('welcomeSubtitle').textContent = 'Administrez la plateforme et modérez le contenu';
+        document.getElementById('primaryActionBtn').innerHTML = '⚙️ Panel Admin';
+        document.getElementById('primaryActionBtn').onclick = () => window.location.href = 'admin.html';
+      }
+    }
+
+    // Load dashboard statistics
+    async function loadDashboard() {
+      try {
+        // Load real stats from API
+        const response = await fetch('http://localhost:8000/backend/index.php?route=api/services');
+        const data = await response.json();
+        const stats = {
+          services: data.success ? data.data.filter(s => s.user_id == user.id).length : 0,
+          views: data.success ? data.data.filter(s => s.user_id == user.id).reduce((sum, s) => sum + (s.views || 0), 0) : 0,
+          reviews: 0,
+          total_services: data.success ? data.data.length : 0,
+          total_users: data.success ? data.data.length : 0
+        };
+        renderStats(stats);
+        renderRecentActivity(stats);
+        renderQuickActions();
+
+        if (user.type === 'autoentrepreneur') {
+          loadUserServices();
+        }
+      } catch (error) {
+        showError('Erreur lors du chargement des statistiques: ' + error.message);
+      }
+    }
+
+    function renderStats(stats) {
+      const statsGrid = document.getElementById('statsGrid');
+      let statsCards = [];
+
+      if (user.type === 'autoentrepreneur') {
+        statsCards = [
+          {
+            icon: '💼',
+            title: 'Services',
+            value: stats.services || 0,
+            subtitle: 'Services actifs'
+          },
+          {
+            icon: '👁️',
+            title: 'Vues',
+            value: stats.views || 0,
+            subtitle: 'Vues totales'
+          },
+          {
+            icon: '⭐',
+            title: 'Avis',
+            value: stats.reviews || 0,
+            subtitle: 'Avis reçus'
+          },
+          {
+            icon: '💰',
+            title: 'Revenus',
+            value: '0',
+            subtitle: 'Ce mois-ci'
+          }
+        ];
+      } else if (user.type === 'client') {
+        statsCards = [
+          {
+            icon: '🎯',
+            title: 'Projets',
+            value: '0 DT',
+            subtitle: 'Projets actifs'
+          },
+          {
+            icon: '⭐',
+            title: 'Avis donnés',
+            value: stats.reviews_given || 0,
+            subtitle: 'Évaluations'
+          },
+          {
+            icon: '💼',
+            title: 'Auto-entrepreneurs',
+            value: '0',
+            subtitle: 'Collaborations'
+          },
+          {
+            icon: '💰',
+            title: 'Budget',
+            value: '0 DT',
+            subtitle: 'Dépensé ce mois'
+          }
+        ];
+      } else if (user.type === 'admin') {
+        statsCards = [
+          {
+            icon: '👥',
+            title: 'Utilisateurs',
+            value: stats.total_users || 0,
+            subtitle: 'Utilisateurs totaux'
+          },
+          {
+            icon: '💼',
+            title: 'Services',
+            value: stats.total_services || 0,
+            subtitle: 'Services totaux'
+          },
+          {
+            icon: '⭐',
+            title: 'Avis',
+            value: stats.total_reviews || 0,
+            subtitle: 'Avis totaux'
+          },
+          {
+            icon: '📈',
+            title: 'Croissance',
+            value: '+12%',
+            subtitle: 'Ce mois-ci'
+          }
+        ];
+      }
+
+      statsGrid.innerHTML = statsCards.map(stat => `
+        <div class="stat-card animate-fade-in">
+          <div class="stat-icon">${stat.icon}</div>
+          <div class="stat-value">${stat.value}</div>
+          <div class="stat-label">${stat.subtitle}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderRecentActivity(stats) {
+      // Show real activity based on user data
+      document.getElementById('recentActivity').innerHTML = `
+        <div class="space-y-3">
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <div class="text-2xl">🎉</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium">Bienvenue sur Auto-Entrepreneur Tunisie!</p>
+              <p class="text-xs text-gray-500">Commencez par créer votre premier service</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <div class="text-2xl">📊</div>
+            <div class="flex-1">
+              <p class="text-sm font-medium">Vous avez ${stats.services} service(s) actif(s)</p>
+              <p class="text-xs text-gray-500">Continuez à développer votre offre</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuickActions() {
+      let actions = [];
+
+      if (user.type === 'autoentrepreneur') {
+        actions = [
+          { icon: '➕', text: 'Créer un nouveau service', href: 'service_create.html' },
+          { icon: '✏️', text: 'Modifier mon profil', href: `profile.html?id=${user.id}` },
+          { icon: '📊', text: 'Voir mes statistiques', href: '#' },
+          { icon: '💬', text: 'Messages clients', href: '#' }
+        ];
+      } else if (user.type === 'client') {
+        actions = [
+          { icon: '🔍', text: 'Chercher des services', href: 'services.html' },
+          { icon: '⭐', text: 'Mes avis et évaluations', href: '#' },
+          { icon: '💼', text: 'Mes projets', href: '#' },
+          { icon: '💬', text: 'Messages auto-entrepreneurs', href: '#' }
+        ];
+      }
+
+      document.getElementById('quickActions').innerHTML = actions.map(action => `
+        <a href="${action.href}" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+          <div class="text-2xl">${action.icon}</div>
+          <span class="font-medium">${action.text}</span>
+        </a>
+      `).join('');
+    }
+
+    async function loadUserServices() {
+      if (user.type !== 'autoentrepreneur') return;
+
+      try {
+        // Load user's services
+        const response = await fetch('http://localhost:8000/backend/index.php?route=api/services');
+        const data = await response.json();
+        const services = data.success ? data.data.filter(s => s.user_id == user.id) : [];
+        const container = document.getElementById('userServices');
+
+        if (services.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full text-center py-8">
+              <div class="text-4xl mb-4">💼</div>
+              <h3 class="text-lg font-semibold mb-2">Aucun service pour le moment</h3>
+              <p class="text-gray-600 mb-4">Créez votre premier service pour commencer à attirer des clients</p>
+              <a href="service_create.html" class="btn btn-primary">Créer mon premier service</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = services.slice(0, 6).map(service => `
+          <div class="service-card">
+            <img src="${service.images ? service.images.split(',')[0] : 'assets/logo.png'}"
+                 alt="${service.title}"
+                 class="service-image">
+            <div class="service-content">
+              <h4 class="service-title">${service.title}</h4>
+              <p class="service-description">${service.description.substring(0, 80)}...</p>
+              <div class="service-meta">
+                <span class="service-price">${service.price} DT</span>
+                <span class="badge badge-success">${service.availability}</span>
+              </div>
+              <div class="flex gap-2 mt-3">
+                <a href="service.html?id=${service.id}" class="btn btn-secondary flex-1">Voir</a>
+                <button class="btn btn-primary flex-1" onclick="editService(${service.id})">Modifier</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (error) {
+        console.error('Erreur lors du chargement des services:', error);
+      }
+    }
+
+    function editService(serviceId) {
+      // Redirect to edit service page (to be implemented)
+      showError('Fonctionnalité de modification à venir');
+    }
+
+    // Initialize dashboard
+    initializeDashboard();
+    loadDashboard();
+  </script>
+</body>
+</html>

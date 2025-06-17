@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Auto-Entrepreneur Tunisie</title>
+  <meta name="description" content="Connexion administrateur pour Auto-Entrepreneur Tunisie">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/homepage.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+  
+  <div style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 20px; padding: 3rem; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); max-width: 400px; width: 100%;">
+    
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">🔐</div>
+      <h1 style="font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">Admin Dashboard</h1>
+      <p style="color: #64748b; font-size: 1rem;">Connexion administrateur</p>
+    </div>
+
+    <!-- Login Form -->
+    <form id="adminLoginForm" style="display: grid; gap: 1.5rem;">
+      <div>
+        <label style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Email administrateur</label>
+        <input type="email" name="email" required 
+               style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease;"
+               placeholder="admin@autoentrepreneur.tn"
+               onfocus="this.style.borderColor='#0ea5e9'"
+               onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      
+      <div>
+        <label style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Mot de passe</label>
+        <input type="password" name="password" required 
+               style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease;"
+               placeholder="••••••••"
+               onfocus="this.style.borderColor='#0ea5e9'"
+               onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 1rem; font-weight: 600;">
+        🚀 Accéder au dashboard
+      </button>
+    </form>
+
+    <!-- Error Display -->
+    <div id="loginError" style="display: none; margin-top: 1rem;"></div>
+
+    <!-- Quick Access Info -->
+    <div style="margin-top: 2rem; padding: 1rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+      <h4 style="font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">🔑 Accès rapide de test:</h4>
+      <p style="margin: 0; font-size: 0.875rem; color: #64748b;">
+        Email: <code>admin@autoentrepreneur.tn</code><br>
+        Mot de passe: <code>admin123</code>
+      </p>
+    </div>
+
+    <!-- Back to Site -->
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="home.html" style="color: #64748b; text-decoration: none; font-size: 0.875rem;">
+        ← Retour au site
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // Admin login form handler
+    document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const form = e.target;
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Connexion...';
+        
+        const formData = new FormData(form);
+        const email = formData.get('email');
+        const password = formData.get('password');
+        
+        // Simple admin authentication (in production, this should be more secure)
+        if (email === 'admin@autoentrepreneur.tn' && password === 'admin123') {
+          // Set admin session
+          localStorage.setItem('admin_token', 'admin_authenticated');
+          localStorage.setItem('admin_user', JSON.stringify({
+            email: email,
+            role: 'admin',
+            name: 'Administrateur'
+          }));
+          
+          showSuccess('Connexion réussie! Redirection...');
+          setTimeout(() => {
+            window.location.href = 'admin_dashboard.html';
+          }, 1000);
+        } else {
+          throw new Error('Email ou mot de passe incorrect');
+        }
+        
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+
+    function showError(message) {
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.innerHTML = `
+        <div style="background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; border: 1px solid #fecaca;">
+          <strong>Erreur:</strong> ${message}
+        </div>
+      `;
+      errorDiv.style.display = 'block';
+    }
+
+    function showSuccess(message) {
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.innerHTML = `
+        <div style="background: #d1fae5; color: #065f46; padding: 1rem; border-radius: 8px; border: 1px solid #a7f3d0;">
+          <strong>Succès:</strong> ${message}
+        </div>
+      `;
+      errorDiv.style.display = 'block';
+    }
+
+    // Check if already logged in as admin
+    if (localStorage.getItem('admin_token')) {
+      window.location.href = 'admin_dashboard.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Auto-Entrepreneur - Auto-Entrepreneur Tunisie</title>
+  <link rel="stylesheet" href="css/style.css">
+  <meta name="description" content="Profil professionnel d'auto-entrepreneur tunisien avec portfolio, expériences et services.">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="assets/logo.png" alt="Auto-Entrepreneur Logo" class="logo">
+          <a href="index.html" class="logo-text" style="text-decoration: none;">Auto-Entrepreneur</a>
+        </div>
+        <nav class="nav-section">
+          <a href="services.html" class="btn btn-secondary">Services</a>
+          <a href="index.html" class="btn btn-secondary">Accueil</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Content -->
+  <section style="padding: 2rem 0; background: var(--gray-50); min-height: 100vh;">
+    <div class="container">
+      <div style="max-width: 900px; margin: 0 auto;">
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-12">
+          <div class="spinner mx-auto mb-4"></div>
+          <p>Chargement du profil...</p>
+        </div>
+
+        <!-- Resume Profile -->
+        <div id="profileContent" class="resume-profile hidden">
+          <!-- Profile content will be loaded here -->
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="hidden text-center py-12">
+          <div class="text-6xl mb-4">😞</div>
+          <h3 class="text-xl font-semibold mb-2">Profil introuvable</h3>
+          <p class="text-gray-600 mb-4">Ce profil n'existe pas ou a été supprimé.</p>
+          <a href="services.html" class="btn btn-primary">Voir tous les services</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <script src="js/main.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const profileId = params.get('id');
+
+    if (!profileId) {
+      showError('ID de profil manquant');
+      setTimeout(() => {
+        window.location.href = 'services.html';
+      }, 2000);
+    }
+
+    async function loadProfile() {
+      try {
+        const profile = await ApiClient.getAutoentrepreneur(profileId);
+
+        if (!profile) {
+          document.getElementById('loadingState').classList.add('hidden');
+          document.getElementById('errorState').classList.remove('hidden');
+          return;
+        }
+
+        const currentUser = getCurrentUser();
+        const isOwnProfile = currentUser && currentUser.id == profileId;
+
+        // Hide loading, show profile
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('profileContent').classList.remove('hidden');
+
+        // Generate resume-style profile
+        document.getElementById('profileContent').innerHTML = `
+          <!-- Resume Header -->
+          <div class="resume-header">
+            <img src="${profile.photo || 'assets/user1.jpg'}" alt="${profile.name}" class="resume-avatar">
+            <h1 class="resume-name">${profile.name}</h1>
+            <p class="resume-title">${profile.categories || 'Auto-entrepreneur'}</p>
+
+            <div class="resume-contact">
+              ${profile.location ? `
+                <div class="resume-contact-item">
+                  <span>📍</span>
+                  <span>${profile.location}</span>
+                </div>
+              ` : ''}
+              ${profile.email ? `
+                <div class="resume-contact-item">
+                  <span>📧</span>
+                  <span>${profile.email}</span>
+                </div>
+              ` : ''}
+              ${profile.phone ? `
+                <div class="resume-contact-item">
+                  <span>📱</span>
+                  <span>${profile.phone}</span>
+                </div>
+              ` : ''}
+              ${profile.availability ? `
+                <div class="resume-contact-item">
+                  <span>⏰</span>
+                  <span>${profile.availability}</span>
+                </div>
+              ` : ''}
+            </div>
+
+            ${isOwnProfile ? `
+              <div style="margin-top: 1rem;">
+                <button class="btn btn-warning" onclick="editProfile()">✏️ Modifier le profil</button>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- About Section -->
+          ${profile.bio ? `
+            <div class="resume-section">
+              <h2 class="resume-section-title">
+                <span>👤</span>
+                À propos
+              </h2>
+              <p style="line-height: 1.6; color: var(--gray-700);">${profile.bio}</p>
+            </div>
+          ` : ''}
+
+          <!-- Skills Section -->
+          ${profile.categories ? `
+            <div class="resume-section">
+              <h2 class="resume-section-title">
+                <span>🛠️</span>
+                Compétences
+              </h2>
+              <div class="resume-skills">
+                ${profile.categories.split(',').map(skill => `
+                  <span class="resume-skill">${skill.trim()}</span>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Experience Section -->
+          ${profile.experience ? `
+            <div class="resume-section">
+              <h2 class="resume-section-title">
+                <span>💼</span>
+                Expérience
+              </h2>
+              <div class="resume-experience-item">
+                <div class="resume-experience-title">Auto-entrepreneur</div>
+                <div class="resume-experience-company">Indépendant</div>
+                <div class="resume-experience-date">${profile.experience}</div>
+                <p style="color: var(--gray-700); line-height: 1.5;">
+                  Spécialisé dans ${profile.categories || 'divers domaines'} avec une expertise reconnue.
+                </p>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Portfolio Section -->
+          ${profile.portfolio ? `
+            <div class="resume-section">
+              <h2 class="resume-section-title">
+                <span>🎨</span>
+                Portfolio
+              </h2>
+              <p>
+                <a href="${profile.portfolio}" target="_blank" class="btn btn-secondary">
+                  🔗 Voir mon portfolio
+                </a>
+              </p>
+            </div>
+          ` : ''}
+
+          <!-- Pricing Section -->
+          ${profile.prices ? `
+            <div class="resume-section">
+              <h2 class="resume-section-title">
+                <span>💰</span>
+                Tarification
+              </h2>
+              <p style="color: var(--gray-700); font-size: 1.1rem; font-weight: 500;">
+                ${profile.prices}
+              </p>
+            </div>
+          ` : ''}
+
+          <!-- Statistics Section -->
+          <div class="resume-section">
+            <h2 class="resume-section-title">
+              <span>📊</span>
+              Statistiques
+            </h2>
+            <div class="resume-stats" id="profileStats">
+              <div class="resume-stat">
+                <span class="resume-stat-value" id="servicesCount">-</span>
+                <span class="resume-stat-label">Services</span>
+              </div>
+              <div class="resume-stat">
+                <span class="resume-stat-value">⭐ 4.9</span>
+                <span class="resume-stat-label">Note moyenne</span>
+              </div>
+              <div class="resume-stat">
+                <span class="resume-stat-value" id="totalViews">-</span>
+                <span class="resume-stat-label">Vues totales</span>
+              </div>
+              <div class="resume-stat">
+                <span class="resume-stat-value">✅ 98%</span>
+                <span class="resume-stat-label">Satisfaction</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Section -->
+          <div class="resume-section text-center">
+            <h2 class="resume-section-title">
+              <span>📞</span>
+              Contact
+            </h2>
+            <div class="flex justify-center gap-4 flex-wrap">
+              ${profile.contact_method ? `
+                <button class="btn btn-primary" onclick="contactAutoentrepreneur('${profile.contact_method}')">
+                  💬 Contacter
+                </button>
+              ` : ''}
+              <button class="btn btn-success" onclick="viewServices()">
+                🛍️ Voir les services
+              </button>
+              <a href="services.html" class="btn btn-secondary">
+                🔍 Autres auto-entrepreneurs
+              </a>
+            </div>
+          </div>
+        `;
+
+        // Load user's services
+        loadUserServices();
+
+      } catch (error) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        showError('Erreur lors du chargement du profil: ' + error.message);
+      }
+    }
+
+    async function loadUserServices() {
+      try {
+        const services = await ApiClient.getServices({ user_id: profileId });
+
+        // Update services count
+        document.getElementById('servicesCount').textContent = services.length;
+
+        // Calculate total views
+        const totalViews = services.reduce((sum, service) => sum + (service.views || 0), 0);
+        document.getElementById('totalViews').textContent = totalViews;
+
+        if (services.length > 0) {
+          const servicesHtml = `
+            <div class="resume-section">
+              <h2 class="resume-section-title">
+                <span>🛍️</span>
+                Services proposés (${services.length})
+              </h2>
+              <div class="grid grid-3 gap-4">
+                ${services.map(s => `
+                  <div class="service-card">
+                    <img src="${s.images ? s.images.split(',')[0] : 'assets/logo.png'}"
+                         alt="${s.title}"
+                         class="service-image"
+                         onerror="this.src='assets/logo.png'">
+                    <div class="service-content">
+                      <h4 class="service-title">${s.title}</h4>
+                      <p class="service-description">${s.description.substring(0, 80)}...</p>
+                      <div class="service-meta">
+                        <span class="service-price">${s.price} DT</span>
+                        <span class="badge badge-success">${s.availability}</span>
+                      </div>
+                      <div class="text-center mt-3">
+                        <a href="service.html?id=${s.id}" class="btn btn-primary w-full">Voir détail</a>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+
+          document.getElementById('profileContent').innerHTML += servicesHtml;
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des services:', error);
+      }
+    }
+
+    function contactAutoentrepreneur(contactMethod) {
+      if (contactMethod.startsWith('whatsapp:')) {
+        const phone = contactMethod.replace('whatsapp:', '');
+        window.open(`https://wa.me/${phone}`, '_blank');
+      } else if (contactMethod.startsWith('email:')) {
+        const email = contactMethod.replace('email:', '');
+        window.open(`mailto:${email}`, '_blank');
+      } else {
+        showError('Méthode de contact non supportée');
+      }
+    }
+
+    function viewServices() {
+      window.location.href = `services.html?freelancer=${profileId}`;
+    }
+
+    function editProfile() {
+      showError('Fonctionnalité de modification de profil à venir');
+    }
+
+    // Load profile on page load
+    loadProfile();
+  </script>
+</body>
+</html>

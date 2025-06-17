@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aperçu du Profil - Auto-Entrepreneur Tunisie</title>
+  <meta name="description" content="Aperçu de votre profil d'auto-entrepreneur avec le modèle sélectionné.">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/homepage.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: #f8fafc;">
+  <!-- Header -->
+  <header class="header">
+    <nav class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <a href="home.html" style="text-decoration: none;">
+            <h2 class="logo-text">🇹🇳 Auto-Entrepreneur</h2>
+          </a>
+        </div>
+        <div class="nav-links">
+          <a href="home.html" class="nav-link">Accueil</a>
+          <a href="services.html" class="nav-link">Services</a>
+          <a href="dashboard.html" class="nav-link">Dashboard</a>
+          <div class="auth-buttons">
+            <button class="btn btn-secondary" onclick="editProfile()">Modifier</button>
+            <a href="profile_templates.html" class="btn btn-primary">Changer de modèle</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px; min-height: 100vh;">
+    <div class="container" style="max-width: 1000px; padding: 2rem;">
+      
+      <!-- Profile Preview -->
+      <div id="profilePreview" style="background: white; border-radius: 16px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); overflow: hidden;">
+        <!-- Content will be loaded here -->
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+        <button class="btn btn-secondary" onclick="editProfile()">✏️ Modifier les informations</button>
+        <a href="profile_templates.html" class="btn btn-outline">🎨 Changer de modèle</a>
+        <button class="btn btn-primary" onclick="publishProfile()">🚀 Publier le profil</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Load and display profile preview
+    function loadProfilePreview() {
+      const profileData = JSON.parse(localStorage.getItem('profileData') || '{}');
+      const templateId = profileData.template || 'modern-professional';
+      
+      if (!profileData.fullName) {
+        // No profile data, redirect to templates
+        window.location.href = 'profile_templates.html';
+        return;
+      }
+      
+      const previewContainer = document.getElementById('profilePreview');
+      
+      switch (templateId) {
+        case 'modern-professional':
+          previewContainer.innerHTML = renderModernTemplate(profileData);
+          break;
+        case 'classic-business':
+          previewContainer.innerHTML = renderClassicTemplate(profileData);
+          break;
+        case 'creative-portfolio':
+          previewContainer.innerHTML = renderCreativeTemplate(profileData);
+          break;
+        case 'minimalist-pro':
+          previewContainer.innerHTML = renderMinimalistTemplate(profileData);
+          break;
+        default:
+          previewContainer.innerHTML = renderModernTemplate(profileData);
+      }
+    }
+
+    function renderModernTemplate(data) {
+      return `
+        <div style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative;">
+          <div style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName)}&background=ffffff&color=667eea&size=100" 
+                 style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid white;">
+          </div>
+        </div>
+        <div style="padding: 3rem 2rem 2rem; text-align: center;">
+          <h1 style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${data.fullName}</h1>
+          <p style="color: #667eea; font-weight: 600; font-size: 1.125rem; margin-bottom: 1rem;">${data.title}</p>
+          <p style="color: #64748b; line-height: 1.6; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            ${data.description}
+          </p>
+          
+          <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            ${data.skills.map(skill => `
+              <span style="background: #f1f5f9; color: #475569; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;">${skill}</span>
+            `).join('')}
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 12px;">
+              <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">${data.experience}+</div>
+              <div style="font-size: 0.875rem; color: #64748b;">Années d'expérience</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 12px;">
+              <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">📍</div>
+              <div style="font-size: 0.875rem; color: #64748b;">${data.location}</div>
+            </div>
+            <div style="text-align: center; padding: 1rem; background: #f8fafc; border-radius: 12px;">
+              <div style="font-size: 1.5rem; font-weight: 700; color: #667eea;">⭐ 5.0</div>
+              <div style="font-size: 0.875rem; color: #64748b;">Note moyenne</div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.125rem;">
+            💬 Contacter ${data.fullName.split(' ')[0]}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderClassicTemplate(data) {
+      return `
+        <div style="padding: 2rem; border-bottom: 3px solid #0ea5e9;">
+          <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName)}&background=0ea5e9&color=ffffff&size=120" 
+                 style="width: 120px; height: 120px; border-radius: 12px; flex-shrink: 0;">
+            <div style="flex: 1; min-width: 300px;">
+              <h1 style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${data.fullName}</h1>
+              <p style="color: #0ea5e9; font-weight: 600; font-size: 1.25rem; margin-bottom: 1rem;">${data.title}</p>
+              <p style="color: #64748b; line-height: 1.6;">${data.description}</p>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div style="text-align: center; padding: 1.5rem; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 2rem; font-weight: 700; color: #0ea5e9;">${data.experience}+</div>
+              <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">Années d'expérience</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 2rem; font-weight: 700; color: #0ea5e9;">⭐ 4.9</div>
+              <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">Note moyenne</div>
+            </div>
+            <div style="text-align: center; padding: 1.5rem; background: #f8fafc; border-radius: 8px;">
+              <div style="font-size: 2rem; font-weight: 700; color: #0ea5e9;">📍</div>
+              <div style="font-size: 0.875rem; color: #64748b; font-weight: 600;">${data.location}</div>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 2rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 1rem;">Compétences</h3>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              ${data.skills.map(skill => `
+                <span style="background: #0ea5e9; color: white; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 500;">${skill}</span>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.125rem;">
+              💼 Voir les services de ${data.fullName.split(' ')[0]}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCreativeTemplate(data) {
+      return `
+        <div style="background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); padding: 2rem;">
+          <div style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 2rem; text-align: center;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName)}&background=ff6b6b&color=ffffff&size=120" 
+                 style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1.5rem; border: 4px solid white; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);">
+            <h1 style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${data.fullName}</h1>
+            <p style="color: #ff6b6b; font-weight: 600; font-size: 1.25rem; margin-bottom: 1.5rem;">${data.title}</p>
+            <p style="color: #64748b; line-height: 1.6; margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+              ${data.description}
+            </p>
+            
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem;">
+              <div style="width: 40px; height: 40px; background: #ff6b6b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">${data.experience}</div>
+              <div style="width: 40px; height: 40px; background: #feca57; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">⭐</div>
+              <div style="width: 40px; height: 40px; background: #48dbfb; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">📍</div>
+              <div style="width: 40px; height: 40px; background: #ff9ff3; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">💼</div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
+              ${data.skills.map((skill, index) => {
+                const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3'];
+                const color = colors[index % colors.length];
+                return `<span style="background: ${color}; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">${skill}</span>`;
+              }).join('')}
+            </div>
+            
+            <button class="btn btn-primary" style="background: #ff6b6b; border-color: #ff6b6b; padding: 1rem 2rem; font-size: 1.125rem;">
+              🎨 Découvrir mon portfolio
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMinimalistTemplate(data) {
+      return `
+        <div style="padding: 3rem 2rem; border-left: 6px solid #8b5cf6;">
+          <div style="display: flex; align-items: start; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName)}&background=8b5cf6&color=ffffff&size=120" 
+                 style="width: 120px; height: 120px; border-radius: 50%; flex-shrink: 0;">
+            <div style="flex: 1; min-width: 300px;">
+              <h1 style="font-size: 2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${data.fullName}</h1>
+              <p style="color: #8b5cf6; font-weight: 600; font-size: 1.25rem; margin-bottom: 1.5rem;">${data.title}</p>
+              <p style="color: #64748b; line-height: 1.6; margin-bottom: 2rem;">${data.description}</p>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+              <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; font-size: 1rem;">Expertise</h3>
+              <div style="color: #64748b;">${data.skills.join(', ')}</div>
+            </div>
+            <div>
+              <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; font-size: 1rem;">Expérience</h3>
+              <div style="color: #64748b;">${data.experience} ans dans le domaine</div>
+            </div>
+            <div>
+              <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; font-size: 1rem;">Localisation</h3>
+              <div style="color: #64748b;">${data.location}</div>
+            </div>
+            <div>
+              <h3 style="font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; font-size: 1rem;">Disponibilité</h3>
+              <div style="color: #16a34a; font-weight: 600;">Disponible</div>
+            </div>
+          </div>
+          
+          <div style="text-align: center;">
+            <button class="btn btn-primary" style="background: #8b5cf6; border-color: #8b5cf6; padding: 1rem 2rem; font-size: 1.125rem;">
+              📞 Prendre contact
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function editProfile() {
+      window.location.href = 'profile_templates.html';
+    }
+
+    function publishProfile() {
+      // In a real app, this would save to the database
+      alert('🎉 Profil publié avec succès! Votre profil est maintenant visible par les clients.');
+      window.location.href = 'dashboard.html';
+    }
+
+    // Load profile on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadProfilePreview();
+    });
+  </script>
+</body>
+</html>

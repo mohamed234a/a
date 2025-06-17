@@ -1,0 +1,60 @@
+# Auto-Entrepreneur Tunisie - Git Ignore File
+
+# Database files
+*.sql.backup
+*.db
+*.sqlite
+
+# Configuration files with sensitive data
+config/database_local.php
+config/secrets.php
+
+# Logs
+*.log
+logs/
+error.log
+access.log
+
+# Cache files
+cache/
+tmp/
+temp/
+
+# Upload directories
+uploads/
+files/
+images/user_uploads/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (if using any)
+node_modules/
+npm-debug.log*
+
+# Composer (if using)
+vendor/
+composer.lock
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+*.tmp
+*.temp

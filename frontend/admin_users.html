@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestion Utilisateurs - Admin Dashboard</title>
+  <meta name="description" content="Gérer les utilisateurs de la plateforme Auto-Entrepreneur Tunisie">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/homepage.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body style="background: #f8fafc;">
+  <!-- Header -->
+  <header class="header" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+    <nav class="container">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <h2 style="color: white; margin: 0; font-size: 1.5rem; font-weight: 800;">
+            🔐 Admin Dashboard
+          </h2>
+        </div>
+        <div class="nav-links">
+          <a href="admin_dashboard.html" class="nav-link" style="color: rgba(255,255,255,0.8);">Dashboard</a>
+          <a href="admin_users.html" class="nav-link" style="color: white;">Utilisateurs</a>
+          <a href="admin_services.html" class="nav-link" style="color: rgba(255,255,255,0.8);">Services</a>
+          <a href="admin_premium.html" class="nav-link" style="color: rgba(255,255,255,0.8);">Premium</a>
+          <div class="auth-buttons">
+            <a href="home.html" class="btn btn-secondary">Voir le site</a>
+            <button class="btn btn-error" onclick="adminLogout()">Déconnexion</button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main style="padding-top: 100px; min-height: 100vh;">
+    <div class="container" style="max-width: 1400px; padding: 2rem;">
+      
+      <!-- Header Section -->
+      <div style="background: white; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">
+              👥 Gestion des Utilisateurs
+            </h1>
+            <p style="color: #64748b; font-size: 1.125rem;">
+              Gérez tous les utilisateurs de la plateforme
+            </p>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <button class="btn btn-outline" onclick="exportUsers()">📊 Exporter</button>
+            <button class="btn btn-primary" onclick="refreshUsers()">🔄 Actualiser</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Search -->
+      <div style="background: white; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+        <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 1rem; align-items: center;">
+          <div>
+            <input type="text" id="searchUsers" placeholder="Rechercher un utilisateur..." 
+                   style="width: 100%; padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+          </div>
+          <select id="userTypeFilter" style="padding: 0.75rem 1rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+            <option value="">Tous les types</option>
+            <option value="autoentrepreneur">Auto-entrepreneurs</option>
+            <option value="client">Clients</option>
+          </select>
+          <button class="btn btn-primary" onclick="applyFilters()">🔍 Filtrer</button>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div style="background: white; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); overflow: hidden;">
+        <div style="padding: 2rem 2rem 1rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">
+            Liste des utilisateurs
+          </h2>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="usersLoading" style="text-align: center; padding: 3rem;">
+          <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+          <p style="color: #64748b;">Chargement des utilisateurs...</p>
+        </div>
+
+        <!-- Users List -->
+        <div id="usersList" style="display: none;">
+          <!-- Content will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="usersEmpty" style="display: none; text-align: center; padding: 3rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+          <h3 style="color: #1e293b; margin-bottom: 0.5rem;">Aucun utilisateur trouvé</h3>
+          <p style="color: #64748b;">Aucun utilisateur ne correspond aux critères de recherche</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- User Details Modal -->
+  <div id="userModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; padding: 2rem;">
+    <div style="background: white; border-radius: 16px; max-width: 600px; margin: 0 auto; padding: 2rem; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">Détails de l'utilisateur</h2>
+        <button onclick="closeUserModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">✕</button>
+      </div>
+      
+      <div id="userModalContent">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allUsers = [];
+    let filteredUsers = [];
+
+    // Check admin authentication
+    function isAdminLoggedIn() {
+      return localStorage.getItem('admin_token') === 'admin_authenticated';
+    }
+
+    function adminLogout() {
+      localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_user');
+      window.location.href = 'admin_login.html';
+    }
+
+    // Redirect if not logged in as admin
+    if (!isAdminLoggedIn()) {
+      window.location.href = 'admin_login.html';
+    }
+
+    // Load users from API
+    async function loadUsers() {
+      try {
+        showLoading();
+
+        const response = await fetch('http://localhost:8000/backend/index.php?route=api/autoentrepreneurs');
+        const data = await response.json();
+
+        if (data.success && data.data && Array.isArray(data.data)) {
+          allUsers = data.data;
+          filteredUsers = [...allUsers];
+          displayUsers(filteredUsers);
+        } else {
+          showEmpty();
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+        showEmpty();
+      }
+    }
+
+    function displayUsers(users) {
+      const container = document.getElementById('usersList');
+      
+      hideAllStates();
+      
+      if (users.length === 0) {
+        showEmpty();
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #1e293b;">Utilisateur</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #1e293b;">Email</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #1e293b;">Type</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #1e293b;">Localisation</th>
+                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #1e293b;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${users.map(user => `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                      <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0ea5e9&color=fff&size=40" 
+                           style="width: 40px; height: 40px; border-radius: 50%;">
+                      <div>
+                        <div style="font-weight: 600; color: #1e293b;">${user.name}</div>
+                        <div style="font-size: 0.875rem; color: #64748b;">${user.categories || 'Auto-entrepreneur'}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 1rem; color: #64748b;">${user.email}</td>
+                  <td style="padding: 1rem;">
+                    <span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; font-weight: 500;">
+                      Auto-entrepreneur
+                    </span>
+                  </td>
+                  <td style="padding: 1rem; color: #64748b;">${user.location || 'Non spécifié'}</td>
+                  <td style="padding: 1rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                      <button class="btn btn-outline" onclick="viewUser(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        👁️ Voir
+                      </button>
+                      <button class="btn btn-secondary" onclick="editUser(${user.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        ✏️ Modifier
+                      </button>
+                      <button class="btn btn-error" onclick="deleteUser(${user.id}, '${user.name}')" style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                        🗑️ Supprimer
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      
+      container.style.display = 'block';
+    }
+
+    function showLoading() {
+      hideAllStates();
+      document.getElementById('usersLoading').style.display = 'block';
+    }
+
+    function showEmpty() {
+      hideAllStates();
+      document.getElementById('usersEmpty').style.display = 'block';
+    }
+
+    function hideAllStates() {
+      document.getElementById('usersLoading').style.display = 'none';
+      document.getElementById('usersList').style.display = 'none';
+      document.getElementById('usersEmpty').style.display = 'none';
+    }
+
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+      const userType = document.getElementById('userTypeFilter').value;
+      
+      filteredUsers = allUsers.filter(user => {
+        const matchesSearch = !searchTerm || 
+          user.name.toLowerCase().includes(searchTerm) ||
+          user.email.toLowerCase().includes(searchTerm) ||
+          (user.categories && user.categories.toLowerCase().includes(searchTerm));
+        
+        const matchesType = !userType || user.type === userType;
+        
+        return matchesSearch && matchesType;
+      });
+      
+      displayUsers(filteredUsers);
+    }
+
+    function refreshUsers() {
+      loadUsers();
+    }
+
+    function exportUsers() {
+      alert('📊 Export des utilisateurs\n\nFonctionnalité à venir:\n• Export CSV\n• Export Excel\n• Statistiques détaillées');
+    }
+
+    function viewUser(userId) {
+      const user = allUsers.find(u => u.id == userId);
+      if (!user) return;
+      
+      document.getElementById('userModalContent').innerHTML = `
+        <div style="display: grid; gap: 1.5rem;">
+          <div style="text-align: center;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0ea5e9&color=fff&size=100" 
+                 style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">${user.name}</h3>
+            <p style="color: #64748b;">${user.categories || 'Auto-entrepreneur'}</p>
+          </div>
+          
+          <div style="display: grid; gap: 1rem;">
+            <div>
+              <label style="font-weight: 600; color: #1e293b;">Email:</label>
+              <p style="margin: 0; color: #64748b;">${user.email}</p>
+            </div>
+            
+            <div>
+              <label style="font-weight: 600; color: #1e293b;">Localisation:</label>
+              <p style="margin: 0; color: #64748b;">${user.location || 'Non spécifié'}</p>
+            </div>
+            
+            ${user.bio ? `
+              <div>
+                <label style="font-weight: 600; color: #1e293b;">Bio:</label>
+                <p style="margin: 0; color: #64748b;">${user.bio}</p>
+              </div>
+            ` : ''}
+            
+            <div>
+              <label style="font-weight: 600; color: #1e293b;">Date d'inscription:</label>
+              <p style="margin: 0; color: #64748b;">${user.created_at || 'Non disponible'}</p>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn btn-outline" onclick="closeUserModal()">Fermer</button>
+            <button class="btn btn-secondary" onclick="showEditUserForm(${user.id})">✏️ Modifier</button>
+            <button class="btn btn-error" onclick="deleteUser(${user.id}, '${user.name}')">🗑️ Supprimer</button>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('userModal').style.display = 'block';
+    }
+
+    function editUser(userId) {
+      showEditUserForm(userId);
+    }
+
+    function showEditUserForm(userId) {
+      const user = allUsers.find(u => u.id == userId);
+      if (!user) return;
+
+      document.getElementById('userModalContent').innerHTML = `
+        <form id="editUserForm" style="display: grid; gap: 1.5rem;">
+          <div style="text-align: center; margin-bottom: 1rem;">
+            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0ea5e9&color=fff&size=80"
+                 style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">Modifier l'utilisateur</h3>
+          </div>
+
+          <div>
+            <label style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Nom complet *</label>
+            <input type="text" name="name" value="${user.name}" required
+                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Email *</label>
+            <input type="email" name="email" value="${user.email}" required
+                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Téléphone</label>
+            <input type="tel" name="phone" value="${user.phone || ''}"
+                   style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+          </div>
+
+          <div>
+            <label style="display: block; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Type d'utilisateur</label>
+            <select name="type" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+              <option value="autoentrepreneur" ${user.type === 'autoentrepreneur' ? 'selected' : ''}>Auto-entrepreneur</option>
+              <option value="client" ${user.type === 'client' ? 'selected' : ''}>Client</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+            <button type="button" class="btn btn-outline" onclick="viewUser(${user.id})">Annuler</button>
+            <button type="submit" class="btn btn-primary">💾 Sauvegarder</button>
+          </div>
+        </form>
+      `;
+
+      // Handle form submission
+      document.getElementById('editUserForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        updateUser(userId, new FormData(this));
+      });
+    }
+
+    async function updateUser(userId, formData) {
+      try {
+        const submitBtn = document.querySelector('#editUserForm button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sauvegarde...';
+
+        const userData = {
+          name: formData.get('name'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          type: formData.get('type')
+        };
+
+        const response = await fetch(`http://localhost:8000/backend/index.php?route=api/users/${userId}&admin=true`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Update local data
+          const userIndex = allUsers.findIndex(u => u.id == userId);
+          if (userIndex !== -1) {
+            allUsers[userIndex] = { ...allUsers[userIndex], ...userData };
+            filteredUsers = [...allUsers];
+          }
+
+          // Refresh display
+          displayUsers(filteredUsers);
+          closeUserModal();
+
+          // Show success message
+          showNotification('✅ Utilisateur modifié avec succès!', 'success');
+        } else {
+          throw new Error(data.message || 'Erreur lors de la modification');
+        }
+
+      } catch (error) {
+        console.error('Error updating user:', error);
+        showNotification('❌ Erreur: ' + error.message, 'error');
+      }
+    }
+
+    async function deleteUser(userId, userName) {
+      if (!confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur "${userName}" ?\n\n⚠️ Cette action est irréversible et supprimera également tous ses services.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:8000/backend/index.php?route=api/users/${userId}&admin=true`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Remove from local data
+          allUsers = allUsers.filter(u => u.id != userId);
+          filteredUsers = filteredUsers.filter(u => u.id != userId);
+
+          // Refresh display
+          displayUsers(filteredUsers);
+          closeUserModal();
+
+          // Show success message
+          showNotification(`✅ Utilisateur "${userName}" supprimé avec succès!`, 'success');
+        } else {
+          throw new Error(data.message || 'Erreur lors de la suppression');
+        }
+
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        showNotification('❌ Erreur: ' + error.message, 'error');
+      }
+    }
+
+    function closeUserModal() {
+      document.getElementById('userModal').style.display = 'none';
+    }
+
+    function showNotification(message, type = 'info') {
+      // Remove existing notification
+      const existing = document.getElementById('notification');
+      if (existing) {
+        existing.remove();
+      }
+
+      // Create notification
+      const notification = document.createElement('div');
+      notification.id = 'notification';
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        max-width: 400px;
+      `;
+
+      if (type === 'success') {
+        notification.style.background = '#d1fae5';
+        notification.style.color = '#065f46';
+        notification.style.border = '1px solid #a7f3d0';
+      } else if (type === 'error') {
+        notification.style.background = '#fee2e2';
+        notification.style.color = '#991b1b';
+        notification.style.border = '1px solid #fecaca';
+      } else {
+        notification.style.background = '#dbeafe';
+        notification.style.color = '#1e40af';
+        notification.style.border = '1px solid #93c5fd';
+      }
+
+      notification.innerHTML = message;
+      document.body.appendChild(notification);
+
+      // Animate in
+      setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+      }, 100);
+
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.remove();
+          }
+        }, 300);
+      }, 5000);
+    }
+
+    // Add search on enter key
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('searchUsers').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          applyFilters();
+        }
+      });
+      
+      // Load users
+      loadUsers();
+    });
+
+    // Add CSS animation for spinner
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
