@@ -11,17 +11,18 @@
 </head>
 <body>
   <!-- Header -->
-  <header>
+  <header style="background: var(--primary); box-shadow: var(--shadow-md);">
     <div class="container">
-      <div class="header-content">
-        <div class="logo-section">
-          <img src="assets/logo.png" alt="TunisiaFreelance Logo" class="logo">
-          <div class="logo-text">Auto-Entrepreneur</div>
+      <div class="header-content" style="display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0;">
+        <div class="logo-section" style="display: flex; align-items: center; gap: 1rem;">
+          <img src="assets/logo.png" alt="TunisiaFreelance Logo" class="logo" style="height: 48px; border-radius: 12px; box-shadow: var(--shadow-sm);">
+          <div class="logo-text" style="font-size: 1.5rem; font-weight: 700; color: var(--white); letter-spacing: 1px;">Auto-Entrepreneur</div>
         </div>
-        <nav class="nav-section">
-          <a href="services.html" class="btn btn-secondary">Parcourir les services</a>
-          <a href="login.html" class="btn btn-secondary">Se connecter</a>
-          <a href="register.html" class="btn btn-primary">S'inscrire</a>
+        <nav class="nav-section" style="display: flex; gap: 1.5rem;">
+          <a href="index.html" class="btn btn-link" style="color: var(--white); font-weight: 500;">Accueil</a>
+          <a href="services.html" class="btn btn-link" style="color: var(--white); font-weight: 500;">Services</a>
+          <a href="login.html" class="btn btn-secondary" style="background: var(--secondary); color: var(--white);">Se connecter</a>
+          <a href="register.html" class="btn btn-primary" style="background: var(--accent); color: var(--white);">S'inscrire</a>
         </nav>
       </div>
     </div>
@@ -147,24 +148,19 @@
   </section>
 
   <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-text">
-          <div class="text-2xl font-bold mb-2" style="color: var(--primary-light);">Auto-Entrepreneur Tunisie</div>
-          <p class="mb-4">La plateforme qui connecte les auto-entrepreneurs tunisiens avec leurs clients</p>
-        </div>
-        <div class="footer-links">
-          <a href="services.html" class="footer-link">Services</a>
-          <a href="#" class="footer-link">À propos</a>
-          <a href="#" class="footer-link">Contact</a>
-          <a href="#" class="footer-link">Aide</a>
-          <a href="#" class="footer-link">Conditions</a>
-          <a href="#" class="footer-link">Confidentialité</a>
-        </div>
-        <div class="text-sm text-gray-500">
-          &copy; 2025 TunisiaFreelance. Tous droits réservés.
-        </div>
+  <footer style="background: var(--primary-dark); color: var(--white); padding: 2rem 0; margin-top: 4rem;">
+    <div class="container" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+      <div style="font-size: 1.1rem; font-weight: 500;">
+        © 2025 Auto-Entrepreneur Tunisie. Tous droits réservés.
+      </div>
+      <div style="display: flex; gap: 1.5rem;">
+        <a href="/" style="color: var(--white); opacity: 0.8;">Accueil</a>
+        <a href="services.html" style="color: var(--white); opacity: 0.8;">Services</a>
+        <a href="register.html" style="color: var(--white); opacity: 0.8;">S'inscrire</a>
+        <a href="login.html" style="color: var(--white); opacity: 0.8;">Connexion</a>
+      </div>
+      <div style="font-size: 1.2rem; opacity: 0.7;">
+        Made with <span style="color: var(--accent);">♥</span> in Tunisia
       </div>
     </div>
   </footer>

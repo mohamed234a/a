@@ -4,17 +4,18 @@
 /* CSS Variables */
 :root {
   /* Colors */
-  --primary: #0ea5e9;
-  --primary-dark: #0284c7;
-  --primary-light: #38bdf8;
-  --secondary: #8b5cf6;
-  --secondary-dark: #7c3aed;
-  --secondary-light: #a78bfa;
-  --accent: #f59e0b;
+  --primary: #2563eb; /* blue-600 */
+  --primary-dark: #1e40af; /* blue-800 */
+  --primary-light: #60a5fa; /* blue-400 */
+  --secondary: #f43f5e; /* rose-500 */
+  --secondary-dark: #be123c; /* rose-800 */
+  --secondary-light: #fda4af; /* rose-300 */
+  --accent: #f59e42; /* orange-400 */
   --success: #10b981;
   --warning: #f59e0b;
   --error: #ef4444;
   --info: #3b82f6;
+  --white: #fff;
   
   /* Grays */
   --gray-50: #f9fafb;
@@ -343,55 +344,45 @@ a:hover {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  color: white;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
 }
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
+.btn-primary:hover {
+  background: var(--primary-dark);
 }
 
 .btn-secondary {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background: var(--secondary);
+  color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+.btn-secondary:hover {
+  background: var(--secondary-dark);
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: var(--bg-secondary);
-  border-color: var(--primary);
-}
-
-.btn-outline {
+.btn-link {
   background: transparent;
   color: var(--primary);
-  border: 1px solid var(--primary);
+  border: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition);
 }
-
-.btn-outline:hover:not(:disabled) {
-  background: var(--primary);
-  color: white;
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--text-secondary);
-}
-
-.btn-ghost:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.btn-sm {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-size: var(--font-size-xs);
-}
-
-.btn-lg {
-  padding: var(--spacing-md) var(--spacing-xl);
-  font-size: var(--font-size-lg);
+.btn-link:hover {
+  color: var(--accent);
+  background: var(--primary-light);
 }
 
 /* Cards */
@@ -610,40 +601,28 @@ a:hover {
 }
 
 /* Footer */
-.footer {
-  background: var(--gray-900);
-  color: white;
-  padding: var(--spacing-2xl) 0 var(--spacing-md);
-  margin-top: var(--spacing-2xl);
+footer {
+  background: var(--primary-dark);
+  color: var(--white);
+  margin-top: 4rem;
+  padding: 2rem 0;
+  font-size: 1rem;
 }
-
-.footer-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
+footer a {
+  color: var(--white);
+  opacity: 0.8;
+  margin-right: 1.5rem;
+  transition: opacity 0.2s;
 }
-
-.footer-section h3 {
-  font-size: var(--font-size-lg);
-  margin-bottom: var(--spacing-md);
+footer a:hover {
+  opacity: 1;
+  color: var(--accent);
 }
-
-.footer-section a {
-  color: var(--gray-300);
-  display: block;
-  margin-bottom: var(--spacing-xs);
-}
-
-.footer-section a:hover {
-  color: white;
-}
-
-.footer-bottom {
-  text-align: center;
-  padding-top: var(--spacing-md);
-  border-top: 1px solid var(--gray-700);
-  color: var(--gray-400);
+footer .container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Responsive Design */
