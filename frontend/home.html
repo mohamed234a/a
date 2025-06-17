@@ -14,27 +14,23 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <nav class="container">
-            <div class="nav-wrapper">
-                <div class="logo">
-                    <h2 class="logo-text">🇹🇳 Auto-Entrepreneur</h2>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="assets/logo.svg" alt="Auto-Entrepreneur Tunisie Logo" class="logo">
+                    <a href="home.html" class="logo-text">Auto-Entrepreneur Tunisie</a>
                 </div>
-                <div class="nav-links">
+                <nav class="nav-section">
+                    <a href="home.html" class="nav-link active">Accueil</a>
                     <a href="services.html" class="nav-link">Services</a>
                     <a href="autoentrepreneurs.html" class="nav-link">Auto-entrepreneurs</a>
-                    <a href="#about" class="nav-link">À propos</a>
-                    <div class="auth-buttons">
-                        <a href="login.html" class="btn btn-secondary">Connexion</a>
+                    <div class="auth-buttons" style="display: flex; gap: 0.75rem; margin-left: 1rem;">
+                        <a href="login.html" class="btn btn-outline">Connexion</a>
                         <a href="register.html" class="btn btn-primary">Inscription</a>
                     </div>
-                </div>
-                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+                </nav>
             </div>
-        </nav>
+        </div>
     </header>
 
     <!-- Hero Section -->
@@ -217,40 +213,23 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>🇹🇳 Auto-Entrepreneur Tunisie</h3>
-                    <p>La plateforme qui connecte les auto-entrepreneurs tunisiens avec leurs clients.</p>
+                <div class="footer-text">
+                    <div class="text-2xl font-bold mb-2" style="color: var(--brand-light-blue);">🇹🇳 Auto-Entrepreneur Tunisie</div>
+                    <p class="mb-4">La plateforme qui connecte les auto-entrepreneurs tunisiens avec leurs clients</p>
                 </div>
-                <div class="footer-section">
-                    <h4>Liens rapides</h4>
-                    <ul>
-                        <li><a href="services.html">Services</a></li>
-                        <li><a href="login.html">Connexion</a></li>
-                        <li><a href="register.html">Inscription</a></li>
-                    </ul>
+                <div class="footer-links">
+                    <a href="home.html" class="footer-link">Accueil</a>
+                    <a href="services.html" class="footer-link">Services</a>
+                    <a href="autoentrepreneurs.html" class="footer-link">Auto-entrepreneurs</a>
+                    <a href="login.html" class="footer-link">Connexion</a>
+                    <a href="register.html" class="footer-link">Inscription</a>
                 </div>
-                <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#">Centre d'aide</a></li>
-                        <li><a href="#">Conditions d'utilisation</a></li>
-                        <li><a href="#">Politique de confidentialité</a></li>
-                    </ul>
+                <div class="text-sm text-gray-300">
+                    &copy; 2025 Auto-Entrepreneur Tunisie. Tous droits réservés.
                 </div>
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <ul>
-                        <li>📧 contact@autoentrepreneur-tn.com</li>
-                        <li>📱 +216 XX XXX XXX</li>
-                        <li>📍 Tunis, Tunisie</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Auto-Entrepreneur Tunisie. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
