@@ -1,8 +1,8 @@
 -- Auto-Entrepreneur Tunisie Database Schema
 -- Clean database without dummy data
 
-CREATE DATABASE IF NOT EXISTS autoentrepreneur_tn DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE autoentrepreneur_tn;
+CREATE DATABASE IF NOT EXISTS autoentre_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE autoentre_db;
 
 -- Users table
 CREATE TABLE users (

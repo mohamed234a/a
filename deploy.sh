@@ -71,3 +71,12 @@ echo "🌐 Access your platform at: http://localhost:8000/frontend/home.html"
 echo "🔐 Admin access: http://localhost:8000/frontend/admin_login.html"
 echo "   Email: admin@autoentrepreneur.tn"
 echo "   Password: admin123"
+
+# Créer la base de données si elle n'existe pas
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS autoentre_db;"
+
+# Importer le schéma
+mysql -u root -p autoentre_db < backend/database/schema.sql
+
+# Importer les données de test (optionnel)
+mysql -u root -p autoentre_db < backend/database.sql

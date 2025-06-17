@@ -17,13 +17,13 @@ cd a
 ### **2. Configuration de la base de données**
 ```bash
 # Créer la base de données
-mysql -u root -p -e "CREATE DATABASE autoentrepreneur_db;"
+mysql -u root -p -e "CREATE DATABASE autoentre_db;"
 
 # Importer le schéma
-mysql -u root -p autoentrepreneur_db < database/schema.sql
+mysql -u root -p autoentre_db < backend/database/schema.sql
 
 # Importer les données de test (optionnel)
-mysql -u root -p autoentrepreneur_db < database/sample_data.sql
+mysql -u root -p autoentre_db < backend/database.sql
 ```
 
 ### **3. Configuration PHP**
